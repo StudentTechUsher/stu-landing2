@@ -4,7 +4,7 @@ A component-first landing site for Stu built with Next.js + TypeScript, Tailwind
 
 ## Project Overview
 
-Stu is an early-talent alignment platform that translates employer-defined hiring standards into measurable, longitudinal capability pathways — improving candidate readiness before hiring begins.
+stu. is an early-talent alignment platform that translates employer-defined hiring standards into measurable, longitudinal capability pathways — improving candidate readiness before hiring begins.
 
 This prototype uses a Storybook-first workflow with reusable UI primitives (`Button`, `Card`, `Badge`) and composable landing sections.
 

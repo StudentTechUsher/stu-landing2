@@ -1,106 +1,49 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { Badge } from '../ui/Badge';
-import { Button } from '../ui/Button';
+import { differentiationSummary, whatStuIsNot } from '../../lib/mock/exampleData';
 import { Card } from '../ui/Card';
 
-const panels = [
-  {
-    id: 'agent-1',
-    title: 'Capability Mapping Agent',
-    detail: 'Converts employer role criteria into weighted capability definitions.'
-  },
-  {
-    id: 'agent-2',
-    title: 'Readiness Evidence Agent',
-    detail: 'Normalizes student artifacts into comparable capability vectors.'
-  },
-  {
-    id: 'agent-3',
-    title: 'Outcome Calibration Agent',
-    detail: 'Learns from interview, hire, and retention outcomes to tune scoring.'
-  }
-] as const;
-
 export const AgentWorkspace = () => {
-  const [selectedPanelId, setSelectedPanelId] = useState<string | null>(null);
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
-
-  const selectedPanel = useMemo(
-    () => panels.find((panel) => panel.id === selectedPanelId) ?? null,
-    [selectedPanelId]
-  );
-
-  useEffect(() => {
-    if (!selectedPanel) return;
-
-    closeButtonRef.current?.focus();
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        setSelectedPanelId(null);
-      }
-    };
-
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [selectedPanel]);
-
   return (
-    <section aria-labelledby="agent-workspace-title" className="mx-auto w-full max-w-7xl px-6 py-16">
-      <div className="mb-8 flex items-center justify-between">
-        <h2 id="agent-workspace-title" className="text-3xl font-semibold tracking-tight text-slate-900">
-          Agent workspace preview
-        </h2>
-        <Badge>Prototype</Badge>
-      </div>
-      <div className="grid gap-5 md:grid-cols-3">
-        {panels.map((panel) => (
-          <Card
-            key={panel.id}
-            header={<h3 className="text-base font-semibold text-slate-900">{panel.title}</h3>}
-            footer={
-              <Button
-                variant="ghost"
-                size="sm"
-                aria-label={`Open details for ${panel.title}`}
-                onClick={() => setSelectedPanelId(panel.id)}
-              >
-                View details
-              </Button>
-            }
-          >
-            <p className="text-sm text-slate-600">{panel.detail}</p>
-          </Card>
-        ))}
-      </div>
+    <section id="difference" aria-labelledby="difference-title" className="mx-auto w-full max-w-7xl px-6 py-20">
+      <div className="grid gap-8 lg:grid-cols-[1.25fr_0.75fr] lg:items-start">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4a675f]">Differentiation</p>
+          <h2 id="difference-title" className="mt-2 text-3xl font-semibold tracking-tight text-[#0a1f1a] md:text-4xl">
+            Stu changes the timing and quality of hiring signal
+          </h2>
 
-      {selectedPanel ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4">
-          <div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="agent-dialog-title"
-            className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl"
-          >
-            <h3 id="agent-dialog-title" className="text-xl font-semibold text-slate-900">
-              {selectedPanel.title}
-            </h3>
-            <p className="mt-3 text-sm leading-7 text-slate-700">{selectedPanel.detail}</p>
-            <p className="mt-3 text-sm leading-7 text-slate-600">
-              TODO: Wire this modal to real agent state from Vercel AI SDK + Anthropic-backed workflows.
-            </p>
-            <div className="mt-5 flex justify-end">
-              <Button
-                ref={closeButtonRef}
-                variant="secondary"
-                aria-label="Close agent details"
-                onClick={() => setSelectedPanelId(null)}
+          <div className="mt-6 space-y-3">
+            {differentiationSummary.map((comparison) => (
+              <article
+                key={comparison.id}
+                className="grid gap-4 rounded-3xl border border-[#cfddd6] bg-white p-5 md:grid-cols-2"
               >
-                Close
-              </Button>
-            </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#627b73]">Status quo</p>
+                  <p className="mt-2 text-sm leading-6 text-[#4f6961]">{comparison.traditional}</p>
+                </div>
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#0b3a2a]">With Stu</p>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-[#11352b]">{comparison.stu}</p>
+                </div>
+              </article>
+            ))}
           </div>
         </div>
-      ) : null}
+
+        <Card
+          header={<h3 className="text-xl font-semibold text-[#0a1f1a]">What stu. is not</h3>}
+          className="bg-[#f8fcfa]"
+        >
+          <ul className="list-disc space-y-2 pl-5 text-sm leading-6 text-[#3f5a52]">
+            {whatStuIsNot.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+          <p className="mt-4 text-sm font-medium text-[#0f3027]">
+            Stu is infrastructure that increases signal density in early-career hiring.
+          </p>
+        </Card>
+      </div>
     </section>
   );
 };
