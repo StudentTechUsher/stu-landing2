@@ -14,7 +14,7 @@ export const Testimonial = ({ items = defaultTestimonials, mode = 'single' }: Te
 
   return (
     <section aria-labelledby="testimonial-title" className="mx-auto w-full max-w-7xl px-6 py-16">
-      <h2 id="testimonial-title" className="text-3xl font-semibold tracking-tight text-slate-900">
+      <h2 id="testimonial-title" className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
         Employer outcomes
       </h2>
       <div className="mt-8 grid gap-4 md:grid-cols-2">
@@ -28,23 +28,25 @@ export const Testimonial = ({ items = defaultTestimonials, mode = 'single' }: Te
                   src={item.avatarSrc}
                   alt={`${item.name} avatar`}
                   loading="lazy"
-                  className="h-12 w-12 rounded-full border border-slate-200"
+                  className="h-12 w-12 rounded-full border border-slate-200 dark:border-slate-700"
                 />
                 <div>
-                  <p className="font-medium text-slate-900">{item.name}</p>
-                  <p className="text-sm text-slate-600">
+                  <p className="font-medium text-slate-900 dark:text-slate-100">{item.name}</p>
+                  <p className="text-sm text-slate-600 dark:text-slate-400">
                     {item.title}, {item.company}
                   </p>
                 </div>
               </div>
             }
           >
-            <blockquote className="text-sm italic leading-6 text-slate-700">{item.quote}</blockquote>
+            <blockquote className="text-sm italic leading-6 text-slate-700 dark:text-slate-300">{item.quote}</blockquote>
           </Card>
         ))}
       </div>
       {mode === 'carousel-mock' ? (
-        <p className="mt-3 text-sm text-slate-500">Carousel mock: swap cards by drag or navigation controls.</p>
+        <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+          Carousel mock: swap cards by drag or navigation controls.
+        </p>
       ) : null}
     </section>
   );

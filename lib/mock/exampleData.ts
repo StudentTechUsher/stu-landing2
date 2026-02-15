@@ -32,6 +32,12 @@ export const oneSentenceDescription =
 export const oneSentenceVisionary =
   'stu. builds the intelligence layer between universities and employers, transforming fragmented student activity into calibrated capability signals aligned to real hiring outcomes.';
 
+export const capabilityPreviewDescription =
+  'stu. converts coursework, projects, internships, leadership, and extracurricular evidence into normalized capability vectors aligned to employer-defined profiles, then recalibrates against interview and offer outcomes.';
+
+export const problemSectionSummary =
+  'Companies spend millions recruiting early-career talent, yet hiring remains noisy and unpredictable because GPA, school brand, and resume snapshots are weak proxies for readiness.';
+
 export const thirtySecondPitch =
   'Companies spend millions recruiting early-career talent, yet hiring remains noisy and unpredictable. stu. shifts hiring upstream by translating employer-defined capability standards into AI-guided, multi-year development pathways for students. As students progress through coursework, projects, and extracurriculars, we structure and normalize those artifacts into measurable capability vectors aligned with company hiring profiles. The result is a higher-density pipeline of candidates who are demonstrably aligned before they ever apply.';
 

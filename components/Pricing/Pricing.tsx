@@ -39,9 +39,9 @@ const plans: Array<{
 
 export const Pricing = ({ highlightPlan = 'pilot' }: PricingProps) => {
   return (
-    <section aria-labelledby="pricing-title" className="border-t border-slate-200 bg-white">
+    <section aria-labelledby="pricing-title" className="border-t border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-950/70">
       <div className="mx-auto w-full max-w-7xl px-6 py-16">
-        <h2 id="pricing-title" className="text-3xl font-semibold tracking-tight text-slate-900">
+        <h2 id="pricing-title" className="text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-100">
           Pricing paths for pilot-to-scale adoption
         </h2>
         <div className="mt-8 grid gap-5 md:grid-cols-3">
@@ -51,15 +51,15 @@ export const Pricing = ({ highlightPlan = 'pilot' }: PricingProps) => {
             return (
               <Card
                 key={plan.id}
-                className={isHighlighted ? 'ring-2 ring-slate-900 shadow-lg' : ''}
+                className={isHighlighted ? 'ring-2 ring-slate-900 shadow-lg dark:ring-slate-300 dark:shadow-[0_24px_52px_-34px_rgba(2,6,23,0.9)]' : ''}
                 header={
                   <div>
-                    <p className="text-lg font-semibold text-slate-900">{plan.title}</p>
-                    <p className="mt-1 text-sm text-slate-600">{plan.summary}</p>
+                    <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">{plan.title}</p>
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{plan.summary}</p>
                   </div>
                 }
               >
-                <ul className="mb-6 list-disc space-y-2 pl-5 text-sm text-slate-600">
+                <ul className="mb-6 list-disc space-y-2 pl-5 text-sm text-slate-600 dark:text-slate-300">
                   {plan.bullets.map((bullet) => (
                     <li key={bullet}>{bullet}</li>
                   ))}

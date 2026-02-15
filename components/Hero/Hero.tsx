@@ -1,17 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
+  capabilityPreviewDescription,
   heroHighlights,
   oneMinutePitch,
-  oneSentenceDescription,
-  oneSentenceVisionary,
-  taglineOptions,
-  thirtySecondPitch
+  oneSentenceDescription
 } from '../../lib/mock/exampleData';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
+import { emphasizeStu } from '../ui/emphasizeStu';
 
-export const HERO_HEADLINE = taglineOptions[0];
+export const HERO_HEADLINE = 'The intelligence layer between universities and employers.';
 export const HERO_SUBHEAD = oneSentenceDescription;
 
 const workflowPreview = [
@@ -46,27 +45,27 @@ export const Hero = () => {
   }, [isBriefOpen]);
 
   return (
-    <header className="relative overflow-hidden border-b border-[#cdd9d4]">
-      <div className="pointer-events-none absolute -top-20 left-0 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(18,249,135,0.38),rgba(18,249,135,0))]" />
-      <div className="pointer-events-none absolute -right-24 top-14 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(18,249,135,0.22),rgba(18,249,135,0))]" />
+    <header className="relative overflow-hidden border-b border-[#cdd9d4] dark:border-slate-800">
+      <div className="pointer-events-none absolute -top-20 left-0 z-0 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(18,249,135,0.38),rgba(18,249,135,0))]" />
+      <div className="pointer-events-none absolute -right-24 top-14 z-0 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(18,249,135,0.22),rgba(18,249,135,0))]" />
 
-      <div className="mx-auto w-full max-w-7xl px-6 pb-20 pt-8">
-        <nav className="mb-14 flex items-center justify-between">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-6 pb-14 pt-6 lg:pb-16">
+        <nav className="mb-10 flex items-center justify-between">
           <Link
             href="/"
-            className="text-3xl font-bold tracking-tight text-[#0a1f1a] leading-none transition-opacity hover:opacity-80"
+            className="text-3xl font-bold leading-none tracking-tight text-[#0a1f1a] transition-opacity hover:opacity-80 dark:text-slate-100"
             aria-label="Stu home"
           >
             stu.
           </Link>
-          <div className="hidden items-center gap-8 text-sm font-medium text-[#36524a] md:flex">
-            <a href="#problem" className="transition-colors hover:text-[#0a1f1a]">
+          <div className="hidden items-center gap-8 text-sm font-medium text-[#36524a] dark:text-slate-300 md:flex">
+            <a href="#problem" className="transition-colors hover:text-[#0a1f1a] dark:hover:text-slate-100">
               Problem
             </a>
-            <a href="#model" className="transition-colors hover:text-[#0a1f1a]">
+            <a href="#model" className="transition-colors hover:text-[#0a1f1a] dark:hover:text-slate-100">
               Model
             </a>
-            <a href="#difference" className="transition-colors hover:text-[#0a1f1a]">
+            <a href="#difference" className="transition-colors hover:text-[#0a1f1a] dark:hover:text-slate-100">
               Differentiation
             </a>
           </div>
@@ -75,14 +74,15 @@ export const Hero = () => {
           </Button>
         </nav>
 
-        <div className="grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-          <div className="space-y-6">
-            <Badge className="bg-[#e9fef3] text-[#0a402d] ring-1 ring-[#b8e9ce]">Early-talent intelligence layer</Badge>
-            <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-[#0a1f1a] md:text-5xl">
+        <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+          <div className="space-y-5">
+            <Badge className="bg-[#e9fef3] text-[#0a402d] ring-1 ring-[#b8e9ce] dark:bg-emerald-500/20 dark:text-emerald-100 dark:ring-emerald-400/30">
+              Early-talent intelligence layer
+            </Badge>
+            <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-[#0a1f1a] dark:text-slate-100 md:text-5xl">
               {HERO_HEADLINE}
             </h1>
-            <p className="max-w-2xl text-lg leading-8 text-[#203c34]">{HERO_SUBHEAD}</p>
-            <p className="max-w-2xl text-base leading-7 text-[#4c665f]">{oneSentenceVisionary}</p>
+            <p className="max-w-2xl text-lg leading-8 text-[#203c34] dark:text-slate-300">{emphasizeStu(HERO_SUBHEAD)}</p>
             <div className="flex flex-wrap gap-3">
               <Button size="lg" aria-label="Request Employer Pilot">
                 Request Employer Pilot
@@ -98,41 +98,43 @@ export const Hero = () => {
             </div>
           </div>
 
-          <div className="rounded-[30px] border border-[#cfdad5] bg-white/95 p-6 shadow-[0_24px_52px_-34px_rgba(10,31,26,0.45)] backdrop-blur">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#4d6b62]">Capability Alignment Preview</p>
-            <h2 className="mt-2 text-2xl font-semibold text-[#0a1f1a]">From coursework to calibrated capability</h2>
-            <p className="mt-3 text-sm leading-6 text-[#4a655d]">{thirtySecondPitch.slice(0, 150)}...</p>
+          <div className="rounded-[30px] border border-[#cfdad5] bg-white/95 p-5 shadow-[0_24px_52px_-34px_rgba(10,31,26,0.45)] backdrop-blur dark:border-slate-700 dark:bg-slate-900/80 dark:shadow-[0_26px_56px_-34px_rgba(2,6,23,0.9)]">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#4d6b62] dark:text-slate-400">
+              Capability Alignment Preview
+            </p>
+            <h2 className="mt-2 text-2xl font-semibold text-[#0a1f1a] dark:text-slate-100">From coursework to calibrated capability</h2>
+            <p className="mt-3 text-sm leading-6 text-[#4a655d] dark:text-slate-300">{emphasizeStu(capabilityPreviewDescription)}</p>
 
-            <div className="mt-6 space-y-3">
+            <div className="mt-5 space-y-3">
               {workflowPreview.map((item) => (
-                <article key={item.id} className="rounded-2xl border border-[#d6e0db] bg-[#f9fcfb] p-3">
-                  <div className="mb-2 flex items-center justify-between gap-3 text-xs font-medium uppercase tracking-[0.08em] text-[#446258]">
+                <article key={item.id} className="rounded-2xl border border-[#d6e0db] bg-[#f9fcfb] p-3 dark:border-slate-700 dark:bg-slate-900/70">
+                  <div className="mb-2 flex items-center justify-between gap-3 text-xs font-medium uppercase tracking-[0.08em] text-[#446258] dark:text-slate-400">
                     <span>{item.label}</span>
                     <span>{item.value}</span>
                   </div>
-                  <div className="h-2 rounded-full bg-[#dbe7e1]">
+                  <div className="h-2 rounded-full bg-[#dbe7e1] dark:bg-slate-700">
                     <div className={`h-full rounded-full bg-[#12f987] ${item.width}`} />
                   </div>
                 </article>
               ))}
             </div>
 
-            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            <div className="mt-5 grid gap-3 sm:grid-cols-3">
               {heroStats.map((stat) => (
-                <article key={stat.id} className="rounded-2xl border border-[#d5e0da] bg-[#f5faf7] p-3">
-                  <p className="text-xs uppercase tracking-[0.08em] text-[#537168]">{stat.label}</p>
-                  <p className="mt-2 text-sm font-semibold text-[#0f2b23]">{stat.value}</p>
+                <article key={stat.id} className="rounded-2xl border border-[#d5e0da] bg-[#f5faf7] p-3 dark:border-slate-700 dark:bg-slate-800/70">
+                  <p className="text-xs uppercase tracking-[0.08em] text-[#537168] dark:text-slate-400">{stat.label}</p>
+                  <p className="mt-2 text-sm font-semibold text-[#0f2b23] dark:text-slate-100">{stat.value}</p>
                 </article>
               ))}
             </div>
           </div>
         </div>
 
-        <div className="mt-12 grid gap-3 sm:grid-cols-3">
+        <div className="mt-8 grid gap-3 sm:grid-cols-3">
           {heroHighlights.map((highlight) => (
             <article
               key={highlight}
-              className="rounded-2xl border border-[#cfe0d8] bg-white/70 px-4 py-3 text-sm font-medium text-[#26443b]"
+              className="rounded-2xl border border-[#cfe0d8] bg-white/70 px-4 py-2.5 text-sm font-medium text-[#26443b] dark:border-slate-700 dark:bg-slate-900/65 dark:text-slate-200"
             >
               {highlight}
             </article>
@@ -164,7 +166,7 @@ export const Hero = () => {
                 Close
               </button>
             </div>
-            <p className="text-sm leading-7 text-[#345149]">{oneMinutePitch}</p>
+            <p className="text-sm leading-7 text-[#345149]">{emphasizeStu(oneMinutePitch)}</p>
           </div>
         </div>
       ) : null}
