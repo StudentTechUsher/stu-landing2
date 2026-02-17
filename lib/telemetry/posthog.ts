@@ -24,7 +24,27 @@ const normalizeHost = (host: string) => host.replace(/\/$/, '');
 
 const getPosthogKey = () => process.env.NEXT_PUBLIC_POSTHOG_KEY?.trim() ?? '';
 const getPosthogHost = () => normalizeHost(process.env.NEXT_PUBLIC_POSTHOG_HOST?.trim() || DEFAULT_POSTHOG_HOST);
-const isPosthogEnabled = () => Boolean(getPosthogKey());
+
+const getAllowedHosts = () => {
+  const configuredHosts = process.env.NEXT_PUBLIC_POSTHOG_ALLOWED_HOSTS?.trim();
+  if (!configuredHosts) {
+    return ['stuplanning.com', 'www.stuplanning.com'];
+  }
+
+  return configuredHosts
+    .split(',')
+    .map((host) => host.trim().toLowerCase())
+    .filter(Boolean);
+};
+
+const isAllowedHost = () => {
+  if (typeof window === 'undefined') return false;
+  const hostname = window.location.hostname.toLowerCase();
+  const allowedHosts = getAllowedHosts();
+  return allowedHosts.includes(hostname);
+};
+
+const isPosthogEnabled = () => Boolean(getPosthogKey()) && isAllowedHost();
 
 const getAssetHost = (apiHost: string) => {
   if (apiHost.includes('-assets.i.posthog.com')) return apiHost;
