@@ -1,3 +1,4 @@
+import { useState, type FormEvent } from 'react';
 import {
   economicClaim,
   icpProfiles,
@@ -5,11 +6,73 @@ import {
   longerVisionNarrative,
   taglineOptions
 } from '../../lib/mock/exampleData';
+import { trackValidationEvent } from '../../lib/telemetry/validationEvents';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 import { emphasizeStu } from '../ui/emphasizeStu';
 
 export const EmployerCTA = () => {
+  const [submissionState, setSubmissionState] = useState<'idle' | 'submitting' | 'sent' | 'error'>('idle');
+  const [submissionMessage, setSubmissionMessage] = useState<string | null>(null);
+
+  const handlePilotConversationRequest = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+
+    const formData = new FormData(form);
+    const name = String(formData.get('name') ?? '').trim();
+    const email = String(formData.get('email') ?? '').trim();
+    const volume = String(formData.get('volume') ?? '').trim();
+    const goal = String(formData.get('goal') ?? '').trim();
+
+    setSubmissionState('submitting');
+    setSubmissionMessage(null);
+
+    try {
+      const response = await fetch('/api/pilot-conversation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name,
+          email,
+          volume,
+          goal
+        })
+      });
+
+      const payload = (await response.json().catch(() => null)) as { message?: string } | null;
+      if (!response.ok) {
+        const failureMessage = payload?.message ?? 'Unable to send pilot request email right now.';
+        trackValidationEvent('pilot_request_failed', {
+          source: 'employer_cta_form',
+          reason: response.status >= 500 ? 'server_error' : 'request_error'
+        });
+        setSubmissionState('error');
+        setSubmissionMessage(failureMessage);
+        return;
+      }
+
+      trackValidationEvent('pilot_request_submitted', {
+        source: 'employer_cta_form',
+        hasEmail: Boolean(email),
+        hasVolume: Boolean(volume),
+        hasGoal: Boolean(goal)
+      });
+      setSubmissionState('sent');
+      setSubmissionMessage(payload?.message ?? 'Pilot request sent. We will follow up shortly.');
+      form.reset();
+    } catch {
+      trackValidationEvent('pilot_request_failed', {
+        source: 'employer_cta_form',
+        reason: 'network_error'
+      });
+      setSubmissionState('error');
+      setSubmissionMessage('Unable to send pilot request email right now.');
+    }
+  };
+
   return (
     <section id="pilot" aria-labelledby="employer-cta-title" className="mx-auto w-full max-w-7xl px-6 py-20">
       <Card className="overflow-hidden p-0">
@@ -51,6 +114,7 @@ export const EmployerCTA = () => {
           <form
             className="space-y-4 rounded-3xl border border-[#cedbd5] bg-[#f8fdf9] p-5 dark:border-slate-700 dark:bg-slate-800/80"
             aria-label="Employer contact form"
+            onSubmit={handlePilotConversationRequest}
           >
             <div>
               <label htmlFor="employer-name" className="mb-1 block text-sm font-medium text-[#2b4940] dark:text-slate-200">
@@ -99,9 +163,25 @@ export const EmployerCTA = () => {
                 placeholder="Increase interview conversion, reduce ramp time, or lower early attrition"
               />
             </div>
-            <Button type="submit" className="w-full" aria-label="Request pilot conversation">
-              Request Pilot Conversation
+            <Button
+              type="submit"
+              className="w-full"
+              aria-label="Request pilot conversation"
+              disabled={submissionState === 'submitting'}
+            >
+              {submissionState === 'submitting' ? 'Sending...' : 'Request Pilot Conversation'}
             </Button>
+            {submissionMessage ? (
+              <p
+                className={`rounded-xl px-3 py-2 text-xs font-medium ${
+                  submissionState === 'sent'
+                    ? 'border border-[#cfe2da] bg-[#f1fbf6] text-[#2d5b4a] dark:border-emerald-700/40 dark:bg-emerald-900/20 dark:text-emerald-200'
+                    : 'border border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-700/40 dark:bg-rose-900/20 dark:text-rose-200'
+                }`}
+              >
+                {submissionMessage}
+              </p>
+            ) : null}
             <p className="text-center text-xs text-[#4d6961] dark:text-slate-400">
               Structured pilot briefs are returned within two business days.
             </p>

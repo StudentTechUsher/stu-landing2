@@ -6,12 +6,17 @@ import {
   oneMinutePitch,
   oneSentenceDescription
 } from '../../lib/mock/exampleData';
+import { trackValidationEvent } from '../../lib/telemetry/validationEvents';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { emphasizeStu } from '../ui/emphasizeStu';
 
 export const HERO_HEADLINE = 'The intelligence layer between universities and employers.';
 export const HERO_SUBHEAD = oneSentenceDescription;
+const PILOT_PREFILL_MESSAGE = "Hi stu. Team, let's discuss a pilot program at my organization.";
+
+const walkthroughCtaClassName =
+  'inline-flex h-12 items-center justify-center rounded-xl bg-white px-5 text-base font-semibold text-[#18372e] ring-1 ring-[#bdd0c8] shadow-[0_10px_25px_-22px_rgba(10,31,26,0.7)] transition-all hover:bg-[#eef5f2] hover:ring-[#9ab9ad] dark:bg-slate-100 dark:text-slate-900 dark:ring-slate-300 dark:hover:bg-slate-200 dark:hover:ring-slate-200';
 
 const workflowPreview = [
   { id: 'w-1', label: 'Employer profiles codified', value: '12 dimensions', width: 'w-[86%]' },
@@ -29,6 +34,50 @@ const heroStats = [
 export const Hero = () => {
   const [isBriefOpen, setIsBriefOpen] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+
+  const scrollToPilotForm = (prefillGoal?: string) => {
+    const pilotSection = document.getElementById('pilot');
+    const goalInput = document.getElementById('employer-goal') as HTMLTextAreaElement | null;
+
+    if (goalInput && prefillGoal && !goalInput.value.trim()) {
+      goalInput.value = prefillGoal;
+      goalInput.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    if (pilotSection) {
+      pilotSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    if (goalInput && prefillGoal) {
+      window.setTimeout(() => goalInput.focus(), 300);
+    }
+  };
+
+  const handleRequestDemoClick = () => {
+    trackValidationEvent('landing_cta_clicked', {
+      ctaId: 'request_demo',
+      location: 'hero_nav',
+      destination: '#pilot'
+    });
+    scrollToPilotForm();
+  };
+
+  const handleRequestEmployerPilotClick = () => {
+    trackValidationEvent('landing_cta_clicked', {
+      ctaId: 'request_employer_pilot',
+      location: 'hero_primary',
+      destination: '#pilot'
+    });
+    scrollToPilotForm(PILOT_PREFILL_MESSAGE);
+  };
+
+  const handleReadBriefClick = () => {
+    trackValidationEvent('landing_cta_clicked', {
+      ctaId: 'read_one_minute_brief',
+      location: 'hero_secondary'
+    });
+    setIsBriefOpen(true);
+  };
 
   useEffect(() => {
     if (!isBriefOpen) return;
@@ -69,7 +118,12 @@ export const Hero = () => {
               Differentiation
             </a>
           </div>
-          <Button variant="secondary" size="sm" aria-label="Request Demo">
+          <Button
+            variant="secondary"
+            size="sm"
+            aria-label="Request Demo"
+            onClick={handleRequestDemoClick}
+          >
             Request Demo
           </Button>
         </nav>
@@ -84,17 +138,38 @@ export const Hero = () => {
             </h1>
             <p className="max-w-2xl text-lg leading-8 text-[#203c34] dark:text-slate-300">{emphasizeStu(HERO_SUBHEAD)}</p>
             <div className="flex flex-wrap gap-3">
-              <Button size="lg" aria-label="Request Employer Pilot">
+              <Button
+                size="lg"
+                aria-label="Request Employer Pilot"
+                onClick={handleRequestEmployerPilotClick}
+              >
                 Request Employer Pilot
               </Button>
               <Button
                 variant="secondary"
                 size="lg"
                 aria-label="Read one-minute brief"
-                onClick={() => setIsBriefOpen(true)}
+                onClick={handleReadBriefClick}
               >
                 Read one-minute brief
               </Button>
+              <Link
+                href={{ pathname: '/walkthrough', query: { source: 'hero' } }}
+                aria-label="See how it works"
+                className={walkthroughCtaClassName}
+                onClick={() => {
+                  trackValidationEvent('landing_cta_clicked', {
+                    ctaId: 'see_how_it_works',
+                    location: 'hero_primary',
+                    destination: '/walkthrough'
+                  });
+                  trackValidationEvent('walkthrough_entry_clicked', {
+                    source: 'hero'
+                  });
+                }}
+              >
+                See how it works
+              </Link>
             </div>
           </div>
 

@@ -269,7 +269,7 @@ export const ProfileBuilder = ({ defaultMode = 'guided', defaultAgentOpen = fals
     () => ({
       profileName,
       mode: builderMode,
-      generatedAt: new Date().toISOString(),
+      generatedAt: 'Generated on export action',
       dimensions: normalizedPriorities.map((priority, index) => ({
         rank: index + 1,
         dimension: priority.title,

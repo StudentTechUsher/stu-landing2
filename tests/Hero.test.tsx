@@ -1,5 +1,5 @@
-import { render, screen } from '@testing-library/react';
-import { describe, expect, it } from 'vitest';
+import { fireEvent, render, screen } from '@testing-library/react';
+import { describe, expect, it, vi } from 'vitest';
 import { HERO_HEADLINE, Hero } from '../components/Hero/Hero';
 
 describe('Hero', () => {
@@ -7,5 +7,40 @@ describe('Hero', () => {
     render(<Hero />);
 
     expect(screen.getByRole('heading', { level: 1, name: HERO_HEADLINE })).toBeInTheDocument();
+  });
+
+  it('renders See how it works CTA linked to walkthrough', () => {
+    render(<Hero />);
+
+    const walkthroughLink = screen.getByRole('link', { name: 'See how it works' });
+    expect(walkthroughLink).toBeInTheDocument();
+    expect(walkthroughLink).toHaveAttribute('href', '/walkthrough?source=hero');
+  });
+
+  it('scrolls to the pilot section when Request Demo is clicked', () => {
+    render(<Hero />);
+    const pilotSection = document.createElement('section');
+    pilotSection.id = 'pilot';
+    const scrollSpy = vi.fn();
+    pilotSection.scrollIntoView = scrollSpy;
+    document.body.appendChild(pilotSection);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Request Demo' }));
+    expect(scrollSpy).toHaveBeenCalledOnce();
+  });
+
+  it('prefills the pilot message when Request Employer Pilot is clicked', () => {
+    render(<Hero />);
+    const pilotSection = document.createElement('section');
+    pilotSection.id = 'pilot';
+    pilotSection.scrollIntoView = vi.fn();
+    document.body.appendChild(pilotSection);
+
+    const goalInput = document.createElement('textarea');
+    goalInput.id = 'employer-goal';
+    document.body.appendChild(goalInput);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Request Employer Pilot' }));
+    expect(goalInput.value).toBe("Hi stu. Team, let's discuss a pilot program at my organization.");
   });
 });

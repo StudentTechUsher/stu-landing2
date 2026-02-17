@@ -86,6 +86,22 @@ Deploy to Vercel (recommended) or any Node.js hosting provider:
 
 - TODO: Wire real capability scoring endpoints in `lib/mock/api.ts`.
 - TODO: Replace mock onboarding flow with authenticated employer onboarding.
-- TODO: Add analytics hooks for CTA and agent-workspace interactions.
+- TODO: Expand analytics coverage for deeper component-level interactions.
 - Agent panels are lazy-loaded in `pages/index.tsx` for initial performance.
 - Hero media uses native lazy loading.
+
+## PostHog Analytics
+
+Set these in `.env.local` to enable telemetry:
+
+```bash
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxxxxxxxx
+NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+```
+
+Tracked events include:
+
+- Landing CTA clicks (`landing_cta_clicked`)
+- Walkthrough entry and depth (`walkthrough_*`)
+- Pilot form outcomes (`pilot_request_submitted`, `pilot_request_failed`)
+- Frontend runtime errors (`frontend_error`, `frontend_unhandled_rejection`)

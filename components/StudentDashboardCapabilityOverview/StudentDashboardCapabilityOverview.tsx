@@ -40,6 +40,26 @@ type CompanySignalProfile = {
   hiddenAdjustments: Partial<CapabilityScores>;
 };
 
+type SnapshotOpportunity = {
+  id: string;
+  companyId: string;
+  title: string;
+  detail: string;
+  dueLabel: string;
+  estimatedLift: number;
+};
+
+export type StudentDashboardScenario = 'new-student' | 'in-progress' | 'strong-signal';
+
+type DashboardScenarioPreset = {
+  selectedCompanyIds: string[];
+  currentScores: CapabilityScores;
+  completedStepIds: string[];
+  registeredOpportunityIds: string[];
+  optedInCompanyIds: string[];
+  trendDelta: number;
+};
+
 const capabilityDimensions: Array<{
   key: CapabilityKey;
   label: string;
@@ -254,6 +274,102 @@ const companySignalProfiles: CompanySignalProfile[] = [
   }
 ];
 
+const snapshotOpportunitiesByProfile: Record<string, SnapshotOpportunity[]> = {
+  'entry-data-engineer': [
+    {
+      id: 'de-company-x-hackathon',
+      companyId: 'company-x',
+      title: 'Sign up for Company X Annual Hackathon',
+      detail: 'Team challenge focused on production-scale data reliability and incident response.',
+      dueLabel: 'Registration closes Mar 18',
+      estimatedLift: 4
+    },
+    {
+      id: 'de-company-y-oss-sprint',
+      companyId: 'company-y',
+      title: 'Join Company Y Open Source Sprint',
+      detail: 'Contribute to one observable data tooling issue with maintainer review.',
+      dueLabel: 'Starts Apr 2',
+      estimatedLift: 3
+    }
+  ],
+  'entry-product-analyst': [
+    {
+      id: 'pa-company-z-product-case',
+      companyId: 'company-z',
+      title: 'Submit for Company Z Product Case Week',
+      detail: 'Short product diagnosis challenge with cross-functional feedback panel.',
+      dueLabel: 'Applications due Mar 22',
+      estimatedLift: 4
+    },
+    {
+      id: 'pa-company-y-experiment-lab',
+      companyId: 'company-y',
+      title: 'Apply to Company Y Experiment Lab',
+      detail: 'Run one guided A/B interpretation exercise with coaching.',
+      dueLabel: 'Opens Apr 5',
+      estimatedLift: 3
+    }
+  ],
+  'entry-associate-consultant': [
+    {
+      id: 'ac-company-z-simulation',
+      companyId: 'company-z',
+      title: 'Join Company Z Strategy Simulation Day',
+      detail: 'Live case simulation emphasizing communication and decision framing.',
+      dueLabel: 'Seats fill by Mar 29',
+      estimatedLift: 4
+    },
+    {
+      id: 'ac-company-x-client-brief',
+      companyId: 'company-x',
+      title: 'Enter Company X Client Brief Challenge',
+      detail: 'Draft a concise recommendation memo reviewed by hiring team advisors.',
+      dueLabel: 'Submission due Apr 9',
+      estimatedLift: 3
+    }
+  ]
+};
+
+const scenarioPresets: Record<StudentDashboardScenario, DashboardScenarioPreset> = {
+  'new-student': {
+    selectedCompanyIds: ['company-x'],
+    currentScores: {
+      technicalDepth: 48,
+      appliedSystemsThinking: 53,
+      dataManagement: 51,
+      collaboration: 60,
+      executionReliability: 49
+    },
+    completedStepIds: [],
+    registeredOpportunityIds: [],
+    optedInCompanyIds: [],
+    trendDelta: 1
+  },
+  'in-progress': {
+    selectedCompanyIds: ['company-x', 'company-y'],
+    currentScores: initialCurrentScores,
+    completedStepIds: ['de-step-2'],
+    registeredOpportunityIds: [],
+    optedInCompanyIds: [],
+    trendDelta: 3
+  },
+  'strong-signal': {
+    selectedCompanyIds: ['company-x', 'company-y'],
+    currentScores: {
+      technicalDepth: 76,
+      appliedSystemsThinking: 79,
+      dataManagement: 80,
+      collaboration: 83,
+      executionReliability: 81
+    },
+    completedStepIds: ['de-step-1', 'de-step-2'],
+    registeredOpportunityIds: ['de-company-x-hackathon'],
+    optedInCompanyIds: ['company-x'],
+    trendDelta: 6
+  }
+};
+
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
 const sumBoost = (boost: Partial<CapabilityScores>) => {
@@ -350,15 +466,23 @@ const impactBadgeClass = (label: string) => {
 
 export interface StudentDashboardCapabilityOverviewProps {
   defaultProfileId?: string;
+  scenario?: StudentDashboardScenario;
 }
 
 export const StudentDashboardCapabilityOverview = ({
-  defaultProfileId = 'entry-data-engineer'
+  defaultProfileId = 'entry-data-engineer',
+  scenario = 'in-progress'
 }: StudentDashboardCapabilityOverviewProps) => {
+  const activeScenarioPreset = scenarioPresets[scenario];
+
   const [selectedProfileId, setSelectedProfileId] = useState(defaultProfileId);
-  const [selectedCompanyIds, setSelectedCompanyIds] = useState<string[]>(['company-x']);
-  const [currentScores, setCurrentScores] = useState(initialCurrentScores);
-  const [completedStepIds, setCompletedStepIds] = useState<string[]>([]);
+  const [selectedCompanyIds, setSelectedCompanyIds] = useState<string[]>([...activeScenarioPreset.selectedCompanyIds]);
+  const [currentScores, setCurrentScores] = useState<CapabilityScores>({ ...activeScenarioPreset.currentScores });
+  const [completedStepIds, setCompletedStepIds] = useState<string[]>([...activeScenarioPreset.completedStepIds]);
+  const [registeredOpportunityIds, setRegisteredOpportunityIds] = useState<string[]>([
+    ...activeScenarioPreset.registeredOpportunityIds
+  ]);
+  const [optedInCompanyIds, setOptedInCompanyIds] = useState<string[]>([...activeScenarioPreset.optedInCompanyIds]);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
 
   const selectedProfile = useMemo(() => {
@@ -448,12 +572,50 @@ export const StudentDashboardCapabilityOverview = ({
   }, [adjustedTargetScores, completedStepIds, currentScores, selectedCompanies, selectedProfile]);
 
   const upcomingSteps = projectedNextSteps.filter((step) => !step.completed).slice(0, 3);
+  const primaryStep = upcomingSteps[0] ?? null;
+
+  const topGap = gapAlerts[0] ?? null;
+
+  const topGapSuggestedStep = useMemo(() => {
+    if (!topGap) return null;
+    return selectedProfile.nextSteps.find((step) => (step.dimensionBoost[topGap.key] ?? 0) > 0) ?? null;
+  }, [selectedProfile.nextSteps, topGap]);
+
+  const recommendedOpportunity = useMemo(() => {
+    const opportunities = snapshotOpportunitiesByProfile[selectedProfile.id] ?? [];
+    if (opportunities.length === 0) return null;
+
+    const companyMatched = opportunities.find((opportunity) => selectedCompanyIds.includes(opportunity.companyId));
+    return companyMatched ?? opportunities[0];
+  }, [selectedCompanyIds, selectedProfile.id]);
+
+  const strongestCompanySignal = useMemo(() => {
+    if (selectedCompanies.length === 0) return null;
+
+    const ranked = selectedCompanies
+      .map((company) => {
+        const companyAdjustedTargets = getAdjustedTargetScores(selectedProfile.baseTargetScores, [company]);
+        return {
+          company,
+          score: computeAlignmentScore(currentScores, companyAdjustedTargets)
+        };
+      })
+      .sort((first, second) => second.score - first.score);
+
+    return ranked[0] ?? null;
+  }, [currentScores, selectedCompanies, selectedProfile.baseTargetScores]);
+
+  const strongestCompanyBand = strongestCompanySignal ? getAlignmentBand(strongestCompanySignal.score) : null;
+
+  const alignmentTrendDelta = useMemo(() => {
+    return activeScenarioPreset.trendDelta + Math.min(completedStepIds.length, 4);
+  }, [activeScenarioPreset.trendDelta, completedStepIds.length]);
 
   const toggleCompany = (companyId: string) => {
     setSelectedCompanyIds((current) => {
       if (current.includes(companyId)) {
         if (current.length === 1) {
-          setStatusMessage('Keep at least one target company selected for personalized guidance.');
+          setStatusMessage('Keep at least one target company selected so I can keep your coaching plan personalized.');
           return current;
         }
 
@@ -476,13 +638,51 @@ export const StudentDashboardCapabilityOverview = ({
     });
 
     setCompletedStepIds((current) => [...current, step.id]);
-    setStatusMessage(`Logged step completion: ${step.title}. Guidance has been recalibrated.`);
+    setStatusMessage(`Nice work. I logged "${step.title}" and updated your next best actions.`);
+  };
+
+  const focusTopGap = () => {
+    if (!topGap) {
+      setStatusMessage('No urgent gaps right now. Keep adding evidence to strengthen your signal confidence.');
+      return;
+    }
+
+    if (topGapSuggestedStep) {
+      setStatusMessage(`Focus ${topGap.label} next. Start with: ${topGapSuggestedStep.title}.`);
+      return;
+    }
+
+    setStatusMessage(`Focus ${topGap.label}. Add or refresh one artifact tied to this capability.`);
+  };
+
+  const registerOpportunity = (opportunity: SnapshotOpportunity) => {
+    if (registeredOpportunityIds.includes(opportunity.id)) {
+      setStatusMessage(`You're already on it: ${opportunity.title}.`);
+      return;
+    }
+
+    setRegisteredOpportunityIds((current) => [...current, opportunity.id]);
+    setStatusMessage(`Added to your plan: ${opportunity.title}. I also added prep checkpoints.`);
+  };
+
+  const optInToCompanySignal = (company: CompanySignalProfile) => {
+    if (optedInCompanyIds.includes(company.id)) {
+      setStatusMessage(`Signal sharing is already on for ${company.name}.`);
+      return;
+    }
+
+    setOptedInCompanyIds((current) => [...current, company.id]);
+    setStatusMessage(`Great move. ${company.name} can now see your readiness signal for early conversations.`);
   };
 
   const resetProgress = () => {
-    setCurrentScores(initialCurrentScores);
-    setCompletedStepIds([]);
-    setStatusMessage('Progress reset to baseline snapshot.');
+    const preset = scenarioPresets[scenario];
+    setSelectedCompanyIds([...preset.selectedCompanyIds]);
+    setCurrentScores({ ...preset.currentScores });
+    setCompletedStepIds([...preset.completedStepIds]);
+    setRegisteredOpportunityIds([...preset.registeredOpportunityIds]);
+    setOptedInCompanyIds([...preset.optedInCompanyIds]);
+    setStatusMessage('Plan reset to your baseline for this scenario.');
   };
 
   return (
@@ -497,22 +697,154 @@ export const StudentDashboardCapabilityOverview = ({
               id="student-capability-dashboard-title"
               className="mt-2 text-3xl font-semibold tracking-tight text-[#0a1f1a] dark:text-slate-100 md:text-4xl"
             >
-              Capability overview
+              Your capability coach
             </h2>
             <p className="mt-3 text-sm leading-7 text-[#436059] dark:text-slate-300">
-              Public role frameworks anchor fair exploration, employer emphasis stays abstracted, and guidance remains
-              probabilistic to prevent gaming.
+              Your plan is personalized to your role goals and target companies. Every card below gives you a concrete
+              move to improve your readiness signal.
             </p>
           </div>
           <Badge className="bg-[#e9fef3] text-[#0a402d] ring-1 ring-[#b8e9ce] dark:bg-emerald-500/20 dark:text-emerald-100 dark:ring-emerald-400/35">
-            Measurable capability pathways
+            Coach mode
           </Badge>
         </div>
 
-        <div className="mt-6 grid gap-4 xl:grid-cols-2">
+        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <Card
+            className="bg-white/95 p-4 dark:bg-slate-900/80"
+            header={
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-sm font-semibold uppercase tracking-[0.08em] text-[#38574d] dark:text-slate-300">Your snapshot</h3>
+                <Badge className="bg-[#dcfff0] text-[#0a402d] dark:bg-emerald-500/20 dark:text-emerald-100">Do now</Badge>
+              </div>
+            }
+          >
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-3xl font-semibold text-[#0f2b23] dark:text-slate-100">{alignmentScore}</p>
+              <Badge className={alignmentBand.className}>{alignmentBand.band}</Badge>
+            </div>
+            <p className="mt-1 text-xs text-[#4c6860] dark:text-slate-300">Target: {selectedProfile.label}</p>
+            <p className="mt-1 text-xs text-[#4c6860] dark:text-slate-300">You are up {alignmentTrendDelta} points in the last 30 days</p>
+            <p className="mt-2 text-xs text-[#4c6860] dark:text-slate-300">
+              {topGap ? `Focus area: ${topGap.label}` : 'No urgent gap right now. Keep momentum.'}
+            </p>
+            <Button type="button" variant="secondary" size="sm" className="mt-3 w-full" onClick={focusTopGap}>
+              {topGap ? 'Coach me on this gap' : 'Show my focus plan'}
+            </Button>
+          </Card>
+
+          <Card
+            className="bg-white/95 p-4 dark:bg-slate-900/80"
+            header={
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-sm font-semibold uppercase tracking-[0.08em] text-[#38574d] dark:text-slate-300">Next best step</h3>
+                <Badge className="bg-[#dcfff0] text-[#0a402d] dark:bg-emerald-500/20 dark:text-emerald-100">Do now</Badge>
+              </div>
+            }
+          >
+            {primaryStep ? (
+              <>
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <p className="text-sm font-semibold text-[#14372d] dark:text-slate-100">{primaryStep.title}</p>
+                  <Badge className={impactBadgeClass(primaryStep.label)}>{primaryStep.label}</Badge>
+                </div>
+                <p className="mt-2 text-xs text-[#4c6860] dark:text-slate-300">{primaryStep.description}</p>
+                <p className="mt-2 text-xs font-medium text-[#4c6860] dark:text-slate-300">
+                  Effort: {primaryStep.eta} · Estimated lift +{Math.max(primaryStep.baseDelta, 1)}
+                </p>
+                <Button type="button" size="sm" className="mt-3 w-full" onClick={() => applyStep(primaryStep)}>
+                  I finished this step
+                </Button>
+              </>
+            ) : (
+              <>
+                <p className="text-sm font-semibold text-[#14372d] dark:text-slate-100">You completed your top priorities</p>
+                <p className="mt-2 text-xs text-[#4c6860] dark:text-slate-300">
+                  Nice progress. Try a different profile or company set to unlock fresh coaching actions.
+                </p>
+                <Button type="button" variant="secondary" size="sm" className="mt-3 w-full" onClick={resetProgress}>
+                  Refresh my plan
+                </Button>
+              </>
+            )}
+          </Card>
+
+          <Card
+            className="bg-white/95 p-4 dark:bg-slate-900/80"
+            header={
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-sm font-semibold uppercase tracking-[0.08em] text-[#38574d] dark:text-slate-300">Opportunity to join</h3>
+                <Badge className="bg-[#eef6ff] text-[#1f4f7a] dark:bg-sky-500/20 dark:text-sky-100">This week</Badge>
+              </div>
+            }
+          >
+            {recommendedOpportunity ? (
+              <>
+                <p className="text-sm font-semibold text-[#14372d] dark:text-slate-100">{recommendedOpportunity.title}</p>
+                <p className="mt-2 text-xs text-[#4c6860] dark:text-slate-300">{recommendedOpportunity.detail}</p>
+                <p className="mt-2 text-xs font-medium text-[#4c6860] dark:text-slate-300">
+                  {recommendedOpportunity.dueLabel} · Potential +{recommendedOpportunity.estimatedLift} alignment lift
+                </p>
+                <Button
+                  type="button"
+                  variant={registeredOpportunityIds.includes(recommendedOpportunity.id) ? 'secondary' : 'primary'}
+                  size="sm"
+                  className="mt-3 w-full"
+                  onClick={() => registerOpportunity(recommendedOpportunity)}
+                >
+                  {registeredOpportunityIds.includes(recommendedOpportunity.id) ? 'Added to plan' : 'Add to my plan'}
+                </Button>
+              </>
+            ) : (
+              <p className="text-xs text-[#4c6860] dark:text-slate-300">No events to add right now for this profile.</p>
+            )}
+          </Card>
+
+          <Card
+            className="bg-white/95 p-4 dark:bg-slate-900/80"
+            header={
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="text-sm font-semibold uppercase tracking-[0.08em] text-[#38574d] dark:text-slate-300">Recruiter visibility</h3>
+                <Badge className="bg-[#fff5e8] text-[#7a4d20] dark:bg-amber-500/20 dark:text-amber-100">Stretch</Badge>
+              </div>
+            }
+          >
+            {strongestCompanySignal && strongestCompanyBand ? (
+              <>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-sm font-semibold text-[#14372d] dark:text-slate-100">{strongestCompanySignal.company.name}</p>
+                  <Badge className={strongestCompanyBand.className}>{strongestCompanyBand.band}</Badge>
+                </div>
+                <p className="mt-2 text-xs text-[#4c6860] dark:text-slate-300">
+                  Alignment {strongestCompanySignal.score} for {selectedProfile.label}.
+                </p>
+                <p className="mt-2 text-xs text-[#4c6860] dark:text-slate-300">
+                  {strongestCompanyBand.band === 'Strong'
+                    ? `Strong signal detected. Consider opting in for early recruiter visibility at ${strongestCompanySignal.company.name}.`
+                    : `Signal is building. Opt in now so ${strongestCompanySignal.company.name} can track your progress updates.`}
+                </p>
+                <Button
+                  type="button"
+                  variant={optedInCompanyIds.includes(strongestCompanySignal.company.id) ? 'secondary' : 'primary'}
+                  size="sm"
+                  className="mt-3 w-full"
+                  onClick={() => optInToCompanySignal(strongestCompanySignal.company)}
+                >
+                  {optedInCompanyIds.includes(strongestCompanySignal.company.id) ? 'Signal sharing on' : 'Share my signal'}
+                </Button>
+              </>
+            ) : (
+              <p className="text-xs text-[#4c6860] dark:text-slate-300">
+                Pick at least one target company and I will highlight where your strongest readiness signal is forming.
+              </p>
+            )}
+          </Card>
+        </div>
+
+        <div className="mt-7 grid gap-4 xl:grid-cols-2">
           <Card
             className="bg-white/95 p-5 dark:bg-slate-900/80"
-            header={<h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">Tier 1 · Public generic capability framework</h3>}
+            header={<h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">Role baseline (public framework)</h3>}
           >
             <label className="text-xs font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">
               Target role profile
@@ -520,7 +852,7 @@ export const StudentDashboardCapabilityOverview = ({
                 value={selectedProfile.id}
                 onChange={(event) => {
                   setSelectedProfileId(event.target.value);
-                  setStatusMessage('Generic role framework updated.');
+                  setStatusMessage('Great choice. I updated your target role and refreshed your plan.');
                 }}
                 className="mt-2 h-11 w-full rounded-xl border border-[#bfd2ca] bg-white px-3 text-sm text-[#0a1f1a] dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
               >
@@ -546,16 +878,16 @@ export const StudentDashboardCapabilityOverview = ({
             </div>
 
             <p className="mt-3 text-xs text-[#4c6860] dark:text-slate-300">
-              This framework is public and role-level only. It is intentionally not company-specific.
+              This baseline is public and role-level. It helps you plan fairly before company-specific details.
             </p>
           </Card>
 
           <Card
             className="bg-white/95 p-5 dark:bg-slate-900/80"
-            header={<h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">Tier 2 · Employer-tuned emphasis (abstracted)</h3>}
+            header={<h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">Company emphasis to keep in mind</h3>}
           >
             <p className="text-sm text-[#48635b] dark:text-slate-300">
-              Employers tune internal weighting privately. Students see directional emphasis, not exact thresholds.
+              You see directional employer emphasis, not exact thresholds, so guidance stays useful without encouraging gaming.
             </p>
 
             <div className="mt-3 flex flex-wrap gap-2">
@@ -596,7 +928,7 @@ export const StudentDashboardCapabilityOverview = ({
             </div>
 
             <p className="mt-3 text-xs text-[#4c6860] dark:text-slate-300">
-              Exact weights and numerical hiring thresholds remain hidden to preserve signal integrity.
+              Exact weights stay hidden to preserve signal integrity.
             </p>
           </Card>
         </div>
@@ -604,11 +936,11 @@ export const StudentDashboardCapabilityOverview = ({
         <div className="mt-7 grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
           <Card
             className="bg-white/95 p-5 dark:bg-slate-900/80"
-            header={<h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">Tier 3 · Personalized probabilistic guidance</h3>}
+            header={<h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">Your guided progress</h3>}
           >
             <div className="rounded-xl border border-[#d4e1db] bg-[#f8fcfa] p-3 dark:border-slate-700 dark:bg-slate-900">
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">Alignment signal</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">Readiness signal</p>
                 <Badge className={alignmentBand.className}>{alignmentBand.band}</Badge>
               </div>
               <p className="mt-1 text-3xl font-semibold text-[#0f2b23] dark:text-slate-100">{alignmentScore}</p>
@@ -651,10 +983,10 @@ export const StudentDashboardCapabilityOverview = ({
 
             <div className="mt-4 flex flex-wrap gap-2">
               <Button type="button" variant="secondary" size="sm" onClick={resetProgress}>
-                Reset simulation
+                Refresh my plan
               </Button>
               <Badge className="bg-[#eef6f1] text-[#325148] dark:bg-slate-700 dark:text-slate-200">
-                {completedStepIds.length} steps logged
+                {completedStepIds.length} actions logged
               </Badge>
             </div>
 
@@ -668,11 +1000,11 @@ export const StudentDashboardCapabilityOverview = ({
           <div className="space-y-4">
             <Card
               className="bg-white/95 p-5 dark:bg-slate-900/80"
-              header={<h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">Next most valuable steps</h3>}
+              header={<h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">Coach recommendations</h3>}
             >
               {upcomingSteps.length === 0 ? (
                 <p className="text-sm text-[#48635b] dark:text-slate-300">
-                  All recommended steps are completed for this profile. Switch profile or reset simulation.
+                  You completed current recommendations for this profile. Switch profile or refresh your plan for new actions.
                 </p>
               ) : (
                 <div className="space-y-2">
@@ -700,13 +1032,13 @@ export const StudentDashboardCapabilityOverview = ({
 
             <Card
               className="bg-white/95 p-5 dark:bg-slate-900/80"
-              header={<h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">Gap alerts</h3>}
+              header={<h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">Where to focus next</h3>}
             >
               {gapAlerts.length === 0 ? (
                 <div className="rounded-xl border border-[#d4e1db] bg-[#f8fcfa] px-3 py-2 dark:border-slate-700 dark:bg-slate-900">
-                  <p className="text-sm font-semibold text-[#15382f] dark:text-slate-100">No major gaps detected</p>
+                  <p className="text-sm font-semibold text-[#15382f] dark:text-slate-100">You are in a healthy range</p>
                   <p className="mt-1 text-xs text-[#4c6860] dark:text-slate-300">
-                    You are within expected range across core capability dimensions.
+                    Keep momentum by adding fresh evidence in your strongest dimensions.
                   </p>
                 </div>
               ) : (
@@ -726,7 +1058,7 @@ export const StudentDashboardCapabilityOverview = ({
                           </Badge>
                         </div>
                         <p className="mt-1 text-xs text-[#4c6860] dark:text-slate-300">
-                          This dimension is currently below expected range for {selectedProfile.label}.
+                          This dimension is below expected range for {selectedProfile.label}.
                         </p>
                         {alert.companyEmphasisAbove ? (
                           <p className="mt-1 text-xs text-[#4c6860] dark:text-slate-300">
@@ -735,7 +1067,7 @@ export const StudentDashboardCapabilityOverview = ({
                         ) : null}
                         {mappedStep ? (
                           <p className="mt-1 text-xs text-[#4c6860] dark:text-slate-300">
-                            Suggested action: {mappedStep.title}
+                            Coach action: {mappedStep.title}
                           </p>
                         ) : null}
                       </div>

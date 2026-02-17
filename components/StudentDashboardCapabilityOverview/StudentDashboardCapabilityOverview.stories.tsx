@@ -1,9 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { StudentDashboardCapabilityOverview } from './StudentDashboardCapabilityOverview';
+import { StudentDashboardCapabilityOverview, type StudentDashboardScenario } from './StudentDashboardCapabilityOverview';
+
+const scenarioOptions: StudentDashboardScenario[] = ['new-student', 'in-progress', 'strong-signal'];
 
 const meta: Meta<typeof StudentDashboardCapabilityOverview> = {
   title: 'Student/StudentDashboardCapabilityOverview',
   component: StudentDashboardCapabilityOverview,
+  render: (args) => <StudentDashboardCapabilityOverview key={`${args.scenario}-${args.defaultProfileId}`} {...args} />,
+  args: {
+    scenario: 'in-progress',
+    defaultProfileId: 'entry-data-engineer'
+  },
+  argTypes: {
+    scenario: {
+      control: 'select',
+      options: scenarioOptions
+    }
+  },
   parameters: {
     layout: 'fullscreen'
   }
@@ -14,15 +27,38 @@ type Story = StoryObj<typeof StudentDashboardCapabilityOverview>;
 
 export const Desktop: Story = {};
 
-export const DataEngineerProfile: Story = {
+export const NewStudentState: Story = {
   args: {
+    scenario: 'new-student',
+    defaultProfileId: 'entry-data-engineer'
+  }
+};
+
+export const InProgressState: Story = {
+  args: {
+    scenario: 'in-progress',
+    defaultProfileId: 'entry-data-engineer'
+  }
+};
+
+export const StrongSignalState: Story = {
+  args: {
+    scenario: 'strong-signal',
     defaultProfileId: 'entry-data-engineer'
   }
 };
 
 export const ProductAnalystProfile: Story = {
   args: {
+    scenario: 'in-progress',
     defaultProfileId: 'entry-product-analyst'
+  }
+};
+
+export const AssociateConsultantProfile: Story = {
+  args: {
+    scenario: 'in-progress',
+    defaultProfileId: 'entry-associate-consultant'
   }
 };
 
