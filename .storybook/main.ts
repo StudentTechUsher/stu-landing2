@@ -2,6 +2,7 @@ import type { StorybookConfig } from '@storybook/nextjs';
 
 const config: StorybookConfig = {
   stories: ['../components/**/*.stories.@(ts|tsx)'],
+  staticDirs: ['../public'],
   addons: ['@storybook/addon-links'],
   framework: {
     name: '@storybook/nextjs',

@@ -5,12 +5,15 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "typecheck": "tsc --noEmit",
     "start": "next start",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
     "lint": "eslint . --ext .ts,.tsx",
+    "security:audit": "npm audit --omit=dev --audit-level=high",
     "format": "prettier --write .",
     "prepare": "husky"
   },
@@ -20,6 +23,7 @@
     "react-dom": "^19.2.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@storybook/addon-links": "^10.2.8",
     "@storybook/nextjs": "^10.2.8",
     "@storybook/react": "^10.2.8",

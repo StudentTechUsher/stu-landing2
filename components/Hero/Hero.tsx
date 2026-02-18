@@ -1,35 +1,22 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { CandidateDetail } from '../CandidateDetail/CandidateDetail';
 import {
-  capabilityPreviewDescription,
   heroHighlights,
-  oneMinutePitch,
-  oneSentenceDescription
+  oneMinutePitch
 } from '../../lib/mock/exampleData';
 import { trackValidationEvent } from '../../lib/telemetry/validationEvents';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { emphasizeStu } from '../ui/emphasizeStu';
 
-export const HERO_HEADLINE = 'The intelligence layer between universities and employers.';
-export const HERO_SUBHEAD = oneSentenceDescription;
+export const HERO_HEADLINE = 'Start building hiring-ready talent — before they apply.';
+export const HERO_SUBHEAD =
+  'stu. transforms fragmented student development into calibrated hiring signals — increasing interview conversion, reducing onboarding friction, and accelerating early-career performance.';
 const PILOT_PREFILL_MESSAGE = "Hi stu. Team, let's discuss a pilot program at my organization.";
 
 const walkthroughCtaClassName =
   'inline-flex h-12 items-center justify-center rounded-xl bg-white px-5 text-base font-semibold text-[#18372e] ring-1 ring-[#bdd0c8] shadow-[0_10px_25px_-22px_rgba(10,31,26,0.7)] transition-all hover:bg-[#eef5f2] hover:ring-[#9ab9ad] dark:bg-slate-100 dark:text-slate-900 dark:ring-slate-300 dark:hover:bg-slate-200 dark:hover:ring-slate-200';
-
-const workflowPreview = [
-  { id: 'w-1', label: 'Employer profiles codified', value: '12 dimensions', width: 'w-[86%]' },
-  { id: 'w-2', label: 'Artifacts normalized', value: '4.7M data points', width: 'w-[72%]' },
-  { id: 'w-3', label: 'Readiness scored', value: 'Probabilistic fit', width: 'w-[64%]' },
-  { id: 'w-4', label: 'Outcomes recalibrated', value: 'Weekly model tuning', width: 'w-[58%]' }
-];
-
-const heroStats = [
-  { id: 's-1', label: 'Signal lens', value: 'Longitudinal' },
-  { id: 's-2', label: 'Scoring mode', value: 'Outcome-calibrated' },
-  { id: 's-3', label: 'Hiring stage', value: 'Pre-application' }
-];
 
 export const Hero = () => {
   const [isBriefOpen, setIsBriefOpen] = useState(false);
@@ -103,7 +90,7 @@ export const Hero = () => {
           <Link
             href="/"
             className="text-3xl font-bold leading-none tracking-tight text-[#0a1f1a] transition-opacity hover:opacity-80 dark:text-slate-100"
-            aria-label="Stu home"
+            aria-label="stu. home"
           >
             stu.
           </Link>
@@ -173,35 +160,11 @@ export const Hero = () => {
             </div>
           </div>
 
-          <div className="rounded-[30px] border border-[#cfdad5] bg-white/95 p-5 shadow-[0_24px_52px_-34px_rgba(10,31,26,0.45)] backdrop-blur dark:border-slate-700 dark:bg-slate-900/80 dark:shadow-[0_26px_56px_-34px_rgba(2,6,23,0.9)]">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#4d6b62] dark:text-slate-400">
-              Capability Alignment Preview
-            </p>
-            <h2 className="mt-2 text-2xl font-semibold text-[#0a1f1a] dark:text-slate-100">From coursework to calibrated capability</h2>
-            <p className="mt-3 text-sm leading-6 text-[#4a655d] dark:text-slate-300">{emphasizeStu(capabilityPreviewDescription)}</p>
-
-            <div className="mt-5 space-y-3">
-              {workflowPreview.map((item) => (
-                <article key={item.id} className="rounded-2xl border border-[#d6e0db] bg-[#f9fcfb] p-3 dark:border-slate-700 dark:bg-slate-900/70">
-                  <div className="mb-2 flex items-center justify-between gap-3 text-xs font-medium uppercase tracking-[0.08em] text-[#446258] dark:text-slate-400">
-                    <span>{item.label}</span>
-                    <span>{item.value}</span>
-                  </div>
-                  <div className="h-2 rounded-full bg-[#dbe7e1] dark:bg-slate-700">
-                    <div className={`h-full rounded-full bg-[#12f987] ${item.width}`} />
-                  </div>
-                </article>
-              ))}
-            </div>
-
-            <div className="mt-5 grid gap-3 sm:grid-cols-3">
-              {heroStats.map((stat) => (
-                <article key={stat.id} className="rounded-2xl border border-[#d5e0da] bg-[#f5faf7] p-3 dark:border-slate-700 dark:bg-slate-800/70">
-                  <p className="text-xs uppercase tracking-[0.08em] text-[#537168] dark:text-slate-400">{stat.label}</p>
-                  <p className="mt-2 text-sm font-semibold text-[#0f2b23] dark:text-slate-100">{stat.value}</p>
-                </article>
-              ))}
-            </div>
+          <div className="min-w-0">
+            <CandidateDetail
+              showInviteButton={false}
+              className="rounded-[30px] border-[#cfdad5] bg-white/95 p-5 shadow-[0_24px_52px_-34px_rgba(10,31,26,0.45)] dark:border-slate-700 dark:bg-slate-900/80 dark:shadow-[0_26px_56px_-34px_rgba(2,6,23,0.9)]"
+            />
           </div>
         </div>
 
@@ -229,7 +192,7 @@ export const Hero = () => {
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#4e6d64]">One-minute pitch</p>
                 <h2 id="one-minute-brief-title" className="mt-1 text-2xl font-semibold text-[#0a1f1a]">
-                  Stu in one minute
+                  {emphasizeStu('stu. in one minute')}
                 </h2>
               </div>
               <button

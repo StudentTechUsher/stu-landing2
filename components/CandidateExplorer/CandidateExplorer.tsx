@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import defaultCandidateAvatar from '../../public/images/Gemini_Generated_Image_2jzqqj2jzqqj2jzq.png';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
@@ -47,7 +48,7 @@ const candidatePool: Candidate[] = [
     id: 'cand-1',
     fullName: 'Avery Park',
     anonymousLabel: 'Candidate 1042',
-    university: 'Northeastern University',
+    university: 'Brigham Young University',
     targetRole: 'Product Analyst',
     alignmentScore: 91,
     capabilities: {
@@ -179,11 +180,82 @@ const bandClassMap: Record<string, string> = {
   Emerging: 'bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-100'
 };
 
+const alignmentMetadataTagsByBand: Record<string, string[]> = {
+  Standout: [
+    'Annual Case Study Competition Finalist',
+    '10+ Project Artifacts',
+    "President of BYU's AIS Chapter",
+    '+5 Additional Hiring Signals'
+  ],
+  Ready: ['7+ Project Artifacts', 'Cross-functional capstone completed', 'Leadership in student teams'],
+  Developing: ['Core artifacts submitted', 'Competency progression trend', 'Mentorship engagement active'],
+  Emerging: ['Baseline evidence captured', 'Initial capability profile set', 'Next-step pathway assigned']
+};
+
+type RecommendationProfile = {
+  actionLabel: string;
+  summary: string;
+  outcomes: Array<{ label: string; value: string }>;
+  nextStep: string;
+};
+
+const recommendationProfileByBand: Record<string, RecommendationProfile> = {
+  Standout: {
+    actionLabel: 'Fast-track to structured interview',
+    summary:
+      'End-of-cycle calibration places this candidate in the highest-confidence cohort for early interview success.',
+    outcomes: [
+      { label: 'Interview conversion forecast', value: '74%' },
+      { label: 'Onboarding friction delta', value: '-24%' },
+      { label: 'Early-performance ramp', value: '+19%' }
+    ],
+    nextStep: 'Send interview invite this week and prioritize manager-panel scheduling.'
+  },
+  Ready: {
+    actionLabel: 'Advance to shortlist this cycle',
+    summary:
+      'Signal quality is strong enough for shortlist inclusion, with targeted validation needed in structured interviews.',
+    outcomes: [
+      { label: 'Interview conversion forecast', value: '62%' },
+      { label: 'Onboarding friction delta', value: '-14%' },
+      { label: 'Early-performance ramp', value: '+11%' }
+    ],
+    nextStep: 'Move forward to first-round interview and validate the top two capability gaps.'
+  },
+  Developing: {
+    actionLabel: 'Hold for next recruiting window',
+    summary:
+      'Current signal is improving, but calibration confidence suggests waiting for additional validated artifacts.',
+    outcomes: [
+      { label: 'Interview conversion forecast', value: '46%' },
+      { label: 'Onboarding friction delta', value: '-5%' },
+      { label: 'Early-performance ramp', value: '+4%' }
+    ],
+    nextStep: 'Keep in nurture queue and reassess after additional project and leadership evidence is added.'
+  },
+  Emerging: {
+    actionLabel: 'Do not advance this cycle',
+    summary: 'Signal density is below threshold for this role; development milestones should be completed before outreach.',
+    outcomes: [
+      { label: 'Interview conversion forecast', value: '33%' },
+      { label: 'Onboarding friction delta', value: '+4%' },
+      { label: 'Early-performance ramp', value: '-3%' }
+    ],
+    nextStep: 'Route to development plan and revisit after baseline capability milestones are completed.'
+  }
+};
+
 export interface CandidateExplorerProps {
   defaultAnonymized?: boolean;
+  candidateAvatarSrc?: string;
+  embedded?: boolean;
 }
 
-export const CandidateExplorer = ({ defaultAnonymized = false }: CandidateExplorerProps) => {
+export const CandidateExplorer = ({
+  defaultAnonymized = false,
+  candidateAvatarSrc = defaultCandidateAvatar.src,
+  embedded = false
+}: CandidateExplorerProps) => {
   const [selectedUniversity, setSelectedUniversity] = useState(ALL_UNIVERSITIES);
   const [selectedRole, setSelectedRole] = useState(ALL_ROLES);
   const [sortKey, setSortKey] = useState<CandidateSortKey>('alignment_desc');
@@ -244,12 +316,21 @@ export const CandidateExplorer = ({ defaultAnonymized = false }: CandidateExplor
 
     return filteredCandidates.find((candidate) => candidate.id === selectedCandidateId) ?? filteredCandidates[0];
   }, [filteredCandidates, selectedCandidateId]);
+  const selectedCandidateBand = selectedCandidate ? getAlignmentBand(selectedCandidate.alignmentScore) : undefined;
+  const selectedCandidateMetadataTags = selectedCandidateBand ? alignmentMetadataTagsByBand[selectedCandidateBand] ?? [] : [];
+  const selectedRecommendationProfile = selectedCandidateBand
+    ? recommendationProfileByBand[selectedCandidateBand]
+    : undefined;
 
   const calendarLinkDraft = selectedCandidate
     ? (calendarDraftByCandidateId[selectedCandidate.id] ?? calendarLinksByCandidateId[selectedCandidate.id] ?? DEFAULT_CALENDAR_LINK)
     : DEFAULT_CALENDAR_LINK;
 
   const noteDraft = selectedCandidate ? (noteDraftByCandidateId[selectedCandidate.id] ?? '') : '';
+  const sectionClassName = embedded ? 'w-full' : 'mx-auto w-full max-w-7xl px-6 py-16';
+  const surfaceClassName = embedded
+    ? 'rounded-[30px] border border-[#cfddd6] bg-[#f8fcfa] p-5 shadow-[0_24px_54px_-36px_rgba(10,31,26,0.45)] dark:border-slate-700 dark:bg-slate-900/75'
+    : 'rounded-[32px] border border-[#cfddd6] bg-[#f8fcfa] p-6 shadow-[0_24px_54px_-36px_rgba(10,31,26,0.45)] dark:border-slate-700 dark:bg-slate-900/75';
 
   const appendActivity = (candidateId: string, message: string) => {
     const timestamp = new Date().toLocaleTimeString('en-US', {
@@ -351,8 +432,8 @@ export const CandidateExplorer = ({ defaultAnonymized = false }: CandidateExplor
   };
 
   return (
-    <section aria-labelledby="candidate-explorer-title" className="mx-auto w-full max-w-7xl px-6 py-16">
-      <div className="rounded-[32px] border border-[#cfddd6] bg-[#f8fcfa] p-6 shadow-[0_24px_54px_-36px_rgba(10,31,26,0.45)] dark:border-slate-700 dark:bg-slate-900/75">
+    <section aria-labelledby="candidate-explorer-title" className={sectionClassName}>
+      <div className={surfaceClassName}>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-3xl">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4c6860] dark:text-slate-400">
@@ -533,30 +614,81 @@ export const CandidateExplorer = ({ defaultAnonymized = false }: CandidateExplor
                   <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#55736a] dark:text-slate-400">
                     Candidate detail
                   </p>
-                  <h3 className="mt-1 text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">
-                    {selectedCandidate ? getDisplayName(selectedCandidate) : 'No candidate selected'}
-                  </h3>
+                  {selectedCandidate ? (
+                    <div className="mt-1 flex items-center gap-3">
+                      <img
+                        src={candidateAvatarSrc}
+                        alt={anonymizedPreview ? 'Selected candidate profile avatar' : `${selectedCandidate.fullName} profile avatar`}
+                        className="h-11 w-11 rounded-xl border border-[#cfe0d8] object-cover shadow-[0_8px_20px_-14px_rgba(10,31,26,0.75)] dark:border-slate-700"
+                      />
+                      <h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">{getDisplayName(selectedCandidate)}</h3>
+                    </div>
+                  ) : (
+                    <h3 className="mt-1 text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">No candidate selected</h3>
+                  )}
                 </div>
               }
             >
               {selectedCandidate ? (
                 <>
-                  <div className="rounded-xl border border-[#d4e1db] bg-[#f8fcfa] p-3 dark:border-slate-700 dark:bg-slate-900">
+                  <div className="rounded-xl border border-[#cce0d5] bg-[#f3fbf7] p-3 dark:border-slate-700 dark:bg-slate-900">
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      <p className="text-sm font-semibold text-[#15382f] dark:text-slate-100">
-                        Alignment score: {selectedCandidate.alignmentScore}
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#3f5f54] dark:text-slate-400">
+                        End-of-cycle recommendation
                       </p>
-                      <Badge className={bandClassMap[getAlignmentBand(selectedCandidate.alignmentScore)]}>
-                        {getAlignmentBand(selectedCandidate.alignmentScore)}
-                      </Badge>
+                      <Badge className={bandClassMap[selectedCandidateBand ?? 'Ready']}>{selectedCandidateBand}</Badge>
+                    </div>
+                    <h4 className="mt-2 text-lg font-semibold text-[#12392f] dark:text-slate-100">
+                      {selectedRecommendationProfile?.actionLabel}
+                    </h4>
+                    <p className="mt-1 text-xs leading-5 text-[#45635a] dark:text-slate-300">
+                      {selectedRecommendationProfile?.summary}
+                    </p>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-3">
+                      {selectedRecommendationProfile?.outcomes.map((outcome) => (
+                        <article
+                          key={`${selectedCandidate.id}-${outcome.label}`}
+                          className="rounded-lg border border-[#d5e3dc] bg-white px-2.5 py-2 dark:border-slate-700 dark:bg-slate-900"
+                        >
+                          <p className="text-[10px] uppercase tracking-[0.07em] text-[#58736a] dark:text-slate-400">{outcome.label}</p>
+                          <p className="mt-1 text-sm font-semibold text-[#153d31] dark:text-slate-100">{outcome.value}</p>
+                        </article>
+                      ))}
+                    </div>
+                    <p className="mt-3 text-xs leading-5 text-[#3f5b53] dark:text-slate-300">
+                      <span className="font-semibold text-[#173f33] dark:text-slate-200">Next action:</span>{' '}
+                      {selectedRecommendationProfile?.nextStep}
+                    </p>
+                  </div>
+
+                  <div className="mt-3 rounded-xl border border-[#d4e1db] bg-[#f8fcfa] p-3 dark:border-slate-700 dark:bg-slate-900">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#3f5f54] dark:text-slate-400">
+                        Supporting alignment signal
+                      </p>
+                      <p className="text-sm font-semibold text-[#15382f] dark:text-slate-100">Score {selectedCandidate.alignmentScore}</p>
                     </div>
                     <p className="mt-1 text-xs text-[#4a665e] dark:text-slate-300">
                       {selectedCandidate.targetRole} ·{' '}
                       {anonymizedPreview ? 'Identity and university masked while preview mode is on.' : selectedCandidate.university}
                     </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {selectedCandidateMetadataTags.map((tag) => (
+                        <Badge
+                          key={`${selectedCandidate.id}-${tag}`}
+                          className="bg-[#eaf7f2] text-[#1f4a3c] ring-1 ring-[#c4ddd1] dark:bg-emerald-500/10 dark:text-emerald-100 dark:ring-emerald-400/30"
+                        >
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
                   </div>
 
-                  <div className="mt-3 space-y-2">
+                  <div className="mt-3">
+                    <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">
+                      Supporting capability detail
+                    </p>
+                    <div className="space-y-2">
                     {capabilityDimensions.map((dimension) => {
                       const score = selectedCandidate.capabilities[dimension.key];
 
@@ -575,6 +707,7 @@ export const CandidateExplorer = ({ defaultAnonymized = false }: CandidateExplor
                         </div>
                       );
                     })}
+                    </div>
                   </div>
 
                   <Button type="button" className="mt-4 w-full" onClick={() => inviteCandidate(selectedCandidate)}>

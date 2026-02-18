@@ -3,6 +3,9 @@ node_modules
 out
 storybook-static
 coverage
+playwright-report
+test-results
+.playwright
 .vscode
 .DS_Store
 npm-debug.log*

@@ -1,9 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import defaultCandidateAvatar from '../../public/images/Gemini_Generated_Image_2jzqqj2jzqqj2jzq.png';
 import { CandidateExplorer } from './CandidateExplorer';
 
 const meta: Meta<typeof CandidateExplorer> = {
   title: 'Recruiter/CandidateExplorer',
   component: CandidateExplorer,
+  args: {
+    candidateAvatarSrc: defaultCandidateAvatar.src
+  },
   parameters: {
     layout: 'fullscreen'
   }

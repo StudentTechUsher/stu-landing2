@@ -62,6 +62,19 @@ npm run storybook
 npm run test
 ```
 
+### Type Check
+
+```bash
+npm run typecheck
+```
+
+### E2E (Playwright)
+
+```bash
+npx playwright install chromium
+npm run test:e2e
+```
+
 ### Lint
 
 ```bash
@@ -73,6 +86,28 @@ npm run lint
 ```bash
 npm run build
 ```
+
+### Security Audit (runtime dependencies)
+
+```bash
+npm run security:audit
+```
+
+## CI and Security
+
+GitHub Actions workflows run on pull requests to `main` and pushes to `main`:
+
+- `CI` workflow:
+  - ESLint (`npm run lint`)
+  - Unit tests (`npm run test`)
+  - TypeScript typecheck (`npm run typecheck`)
+  - Production build (`npm run build`)
+  - Playwright e2e on Chromium (`npm run test:e2e`)
+  - Runtime dependency audit (`npm run security:audit`)
+  - Dependency Review (`actions/dependency-review-action`) on pull requests
+- `CodeQL` workflow:
+  - Static analysis with `javascript-typescript` and `security-and-quality` queries
+  - Weekly scheduled scan
 
 ## Deploy
 
