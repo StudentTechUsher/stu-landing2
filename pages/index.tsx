@@ -10,10 +10,10 @@ export default function HomePage() {
   return (
     <>
       <Head>
-        <title>Stu | Early-Talent Alignment Platform</title>
+        <title>Stu | Hire Ready New Grads Before They Apply</title>
         <meta
           name="description"
-          content="Stu translates employer hiring standards into measurable student capability pathways before hiring begins."
+          content="Stu helps employers define role skills, score student work, and identify hiring-ready candidates before recruiting season."
         />
       </Head>
       <main className="min-h-screen text-[#0a1f1a]">

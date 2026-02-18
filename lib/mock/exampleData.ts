@@ -27,35 +27,35 @@ export type TargetProfile = {
 };
 
 export const oneSentenceDescription =
-  'stu. is an early-talent alignment platform that translates employer-defined hiring standards into measurable, longitudinal capability pathways - improving candidate readiness before hiring begins.';
+  'stu. helps employers define role skills, score student evidence against those skills, and identify candidates who are ready before recruiting season.';
 
 export const oneSentenceVisionary =
-  'stu. builds the intelligence layer between universities and employers, transforming fragmented student activity into calibrated capability signals aligned to real hiring outcomes.';
+  'stu. gives employers and universities a shared skills map so teams can hire earlier on evidence and students know what to build toward.';
 
 export const capabilityPreviewDescription =
-  'stu. converts coursework, projects, internships, leadership, and extracurricular evidence into normalized capability vectors aligned to employer-defined profiles, then recalibrates against interview and offer outcomes.';
+  'stu. maps coursework, projects, internships, leadership, and extracurricular work to role skills, then improves scoring using interview and offer outcomes.';
 
 export const problemSectionSummary =
-  'Companies spend millions recruiting early-career talent, yet hiring remains noisy and unpredictable because GPA, school brand, and resume snapshots are weak proxies for readiness.';
+  'Companies spend millions recruiting early-career talent, but GPA, school name, and resume snapshots are weak predictors of job readiness.';
 
 export const thirtySecondPitch =
-  'Companies spend millions recruiting early-career talent, yet hiring remains noisy and unpredictable. stu. shifts hiring upstream by translating employer-defined capability standards into AI-guided, multi-year development pathways for students. As students progress through coursework, projects, and extracurriculars, we structure and normalize those artifacts into measurable capability vectors aligned with company hiring profiles. The result is a higher-density pipeline of candidates who are demonstrably aligned before they ever apply.';
+  'Companies spend millions on early-career hiring, but resumes and GPA alone do not show who is actually ready. stu. lets hiring teams define role skills up front, then maps student classes, projects, and internships to those skills. Students get clear guidance on what to improve, and employers get a stronger interview pool before applications open.';
 
 export const oneMinutePitch =
-  'Early-career hiring is inefficient because the signal is weak. Employers rely on GPA, school brand, and resume heuristics that do not reliably predict performance. Meanwhile, students make academic and extracurricular decisions without clear visibility into what hiring-ready actually means. stu. solves this by operationalizing employer hiring standards into structured capability models. We ingest longitudinal student artifacts - coursework, projects, leadership roles, certifications - and translate them into normalized capability vectors aligned with specific employer profiles. As hiring outcomes accumulate, the system recalibrates to reflect what actually predicts interview and offer success. Instead of reacting to applicants, companies gain upstream influence over talent alignment. Instead of guessing, students receive probabilistic guidance toward roles where they are most likely to succeed. stu. reduces hiring noise and increases readiness before recruitment even begins.';
+  'Early-career hiring is hard because most teams are forced to screen on weak signals like GPA, school name, and resume polish. Students also struggle because they cannot see which skills each role actually requires. stu. connects both sides with one shared framework. Employers define role scorecards first. Students then connect coursework, projects, internships, leadership roles, and certifications as evidence. stu. scores that evidence against each role so hiring teams can see strengths, gaps, and readiness earlier. As interview and offer results come in, the scoring is updated to match what predicts success in real hiring cycles. The outcome is simpler: employers get a better interview pool, and students get clearer next steps long before they apply.';
 
 export const internalVisionStatement =
-  'stu. becomes the operating system for early-career talent alignment - a capability translation layer that reduces uncertainty in hiring and replaces heuristic screening with outcome-calibrated signal.';
+  'stu. gives employers and students one shared view of readiness, replacing resume guesswork with evidence tied to hiring results.';
 
 export const longerVisionNarrative =
-  'Over time, stu. evolves into the standard infrastructure layer connecting universities and employers. Companies define capability expectations, students generate longitudinal development data, and hiring outcomes recalibrate the model continuously.';
+  'Over time, employers define role scorecards, students build evidence against them, and every hiring cycle makes the scoring more accurate.';
 
 export const economicClaim =
-  'If stu. increases interview conversion, reduces junior ramp time, or lowers early attrition by even modest margins, the ROI exceeds enterprise subscription costs by multiples.';
+  'If stu. improves interview conversion, shortens new-hire ramp time, or lowers early attrition, the savings can exceed subscription cost.';
 export const taglineOptions = [
-  'Build hiring-ready talent before hiring begins.',
-  'Reduce hiring noise. Increase readiness.',
-  'From coursework to capability.'
+  'Know who is ready before applications open.',
+  'Turn student work into hiring evidence.',
+  'Hire for skills, not resume signals.'
 ];
 
 export const heroHighlights = [
@@ -67,91 +67,91 @@ export const heroHighlights = [
 export const problemSignals: ProblemSignal[] = [
   {
     id: 'p-1',
-    text: 'GPA varies by institution and grading culture.'
+    text: 'GPA is not comparable across schools, majors, or grading policies.'
   },
   {
     id: 'p-2',
-    text: 'Prestige often substitutes for measurable capability.'
+    text: 'School prestige often stands in for real skill evidence.'
   },
   {
     id: 'p-3',
-    text: 'Resume screening compresses multi-year development into a static snapshot.'
+    text: 'A one-page resume hides 3-4 years of project and internship work.'
   },
   {
     id: 'p-4',
-    text: 'Students lack clarity on what hiring-ready truly means.'
+    text: 'Students rarely know which skills each entry-level role actually requires.'
   }
 ];
 
 export const solutionPillars: SolutionPillar[] = [
   {
     id: 's-1',
-    title: 'Employer Capability Modeling',
+    title: 'Define role skill scorecards',
     description:
-      'Companies define structured hiring-ready profiles across technical, applied, and behavioral dimensions.'
+      'Hiring teams choose the exact technical, applied, and behavioral skills each role requires.'
   },
   {
     id: 's-2',
-    title: 'Artifact Structuring and Normalization',
+    title: 'Turn student work into evidence',
     description:
-      'Coursework, projects, certifications, and leadership experiences are translated into latent capability dimensions.'
+      'Coursework, projects, internships, certifications, and leadership work are mapped to those role skills.'
   },
   {
     id: 's-3',
-    title: 'Alignment Scoring',
+    title: 'Score readiness for each role',
     description:
-      'Students are scored probabilistically against employer profiles using normalized capability vectors.'
+      'Each student gets a role-specific readiness score with clear strengths and gaps.'
   },
   {
     id: 's-4',
-    title: 'Outcome Calibration',
+    title: 'Improve scoring with outcomes',
     description:
-      'Interview and offer outcomes refine model weights over time so readiness prediction improves each cycle.'
+      'Interview and offer results tune scoring each recruiting cycle so predictions get better over time.'
   }
 ];
 
 export const operatingModelSteps: OperatingStep[] = [
   {
     id: 'o-1',
-    title: 'Define target capability profiles',
+    title: 'Set role scorecards',
     description:
-      'Employer teams specify what hiring-ready looks like for each early-career role before recruiting starts.'
+      'Hiring managers define what ready looks like for each role before recruiting starts.'
   },
   {
     id: 'o-2',
-    title: 'Structure longitudinal artifacts',
+    title: 'Collect student evidence',
     description:
-      'Student activity across academics and applied work is converted into comparable evidence vectors.'
+      'Student classes, projects, internships, and leadership work are converted into comparable evidence.'
   },
   {
     id: 'o-3',
-    title: 'Score candidate-role alignment',
+    title: 'Generate readiness scores',
     description:
-      'Readiness is assessed probabilistically against employer benchmarks, not resume heuristics.'
+      'Students are scored against role scorecards instead of being screened only on resumes.'
   },
   {
     id: 'o-4',
-    title: 'Calibrate to hiring outcomes',
+    title: 'Improve with hiring outcomes',
     description:
-      'Interview and offer outcomes continuously tune profile weights and signal interpretation.'
+      'Interview and offer results continuously improve how the scoring model weighs evidence.'
   }
 ];
 
 export const differentiationSummary: Differentiator[] = [
   {
     id: 'd-1',
-    traditional: 'LinkedIn and Handshake operate at application time.',
-    stu: 'stu. operates during development.'
+    traditional: 'LinkedIn and Handshake mostly enter the process once students apply.',
+    stu: 'stu. starts earlier while students are still building evidence.'
   },
   {
     id: 'd-2',
-    traditional: 'Traditional hiring evaluates snapshots.',
-    stu: 'stu. evaluates longitudinal behavior.'
+    traditional: 'Traditional hiring often judges one resume snapshot.',
+    stu: 'stu. tracks progress over time across classes, projects, and internships.'
   },
   {
     id: 'd-3',
-    traditional: 'Prestige-based filtering amplifies bias.',
-    stu: 'stu. scores demonstrated capability.'
+    traditional: 'Screening often relies on school prestige and keyword matching.',
+    stu: 'stu. scores demonstrated skills against role scorecards.'
   }
 ];
 
@@ -166,19 +166,19 @@ export const whatStuIsNot = [
 export const icpProfiles: TargetProfile[] = [
   {
     id: 'i-1',
-    text: 'Tech companies hiring 50+ graduates annually'
+    text: 'Tech companies hiring 50+ grads each year'
   },
   {
     id: 'i-2',
-    text: 'Consulting firms with structured competency models'
+    text: 'Consulting firms hiring in repeatable analyst cohorts'
   },
   {
     id: 'i-3',
-    text: 'Engineering-driven enterprises with high junior ramp costs'
+    text: 'Engineering organizations where junior ramp time is expensive'
   },
   {
     id: 'i-4',
-    text: 'Teams investing heavily in campus recruiting with measurable readiness goals'
+    text: 'Campus recruiting teams measured on conversion and early retention'
   }
 ];
 

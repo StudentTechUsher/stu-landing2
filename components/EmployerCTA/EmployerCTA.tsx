@@ -6,6 +6,7 @@ import {
   longerVisionNarrative,
   taglineOptions
 } from '../../lib/mock/exampleData';
+import { getPersistedHeroCopyVariant } from '../../lib/telemetry/experiments';
 import { trackValidationEvent } from '../../lib/telemetry/validationEvents';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
@@ -24,6 +25,7 @@ export const EmployerCTA = () => {
     const email = String(formData.get('email') ?? '').trim();
     const volume = String(formData.get('volume') ?? '').trim();
     const goal = String(formData.get('goal') ?? '').trim();
+    const heroCopyVariant = getPersistedHeroCopyVariant();
 
     setSubmissionState('submitting');
     setSubmissionMessage(null);
@@ -47,7 +49,8 @@ export const EmployerCTA = () => {
         const failureMessage = payload?.message ?? 'Unable to send pilot request email right now.';
         trackValidationEvent('pilot_request_failed', {
           source: 'employer_cta_form',
-          reason: response.status >= 500 ? 'server_error' : 'request_error'
+          reason: response.status >= 500 ? 'server_error' : 'request_error',
+          heroCopyVariant: heroCopyVariant ?? null
         });
         setSubmissionState('error');
         setSubmissionMessage(failureMessage);
@@ -58,7 +61,8 @@ export const EmployerCTA = () => {
         source: 'employer_cta_form',
         hasEmail: Boolean(email),
         hasVolume: Boolean(volume),
-        hasGoal: Boolean(goal)
+        hasGoal: Boolean(goal),
+        heroCopyVariant: heroCopyVariant ?? null
       });
       setSubmissionState('sent');
       setSubmissionMessage(payload?.message ?? 'Pilot request sent. We will follow up shortly.');
@@ -66,7 +70,8 @@ export const EmployerCTA = () => {
     } catch {
       trackValidationEvent('pilot_request_failed', {
         source: 'employer_cta_form',
-        reason: 'network_error'
+        reason: 'network_error',
+        heroCopyVariant: heroCopyVariant ?? null
       });
       setSubmissionState('error');
       setSubmissionMessage('Unable to send pilot request email right now.');
@@ -78,14 +83,14 @@ export const EmployerCTA = () => {
       <Card className="overflow-hidden p-0">
         <div className="grid gap-8 p-6 md:p-8 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4a675f] dark:text-slate-400">Pilot pathway</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4a675f] dark:text-slate-400">Pilot program</p>
             <h2 id="employer-cta-title" className="text-3xl font-semibold tracking-tight text-[#0a1f1a] dark:text-slate-100">
-              Run an employer pilot with measurable outcomes
+              Run a pilot and track interview conversion, ramp time, and early retention
             </h2>
             <p className="text-sm leading-7 text-[#3f5a52] dark:text-slate-300">{emphasizeStu(economicClaim)}</p>
 
             <div>
-              <h3 className="text-base font-semibold text-[#0f2b23] dark:text-slate-100">Ideal early customers</h3>
+              <h3 className="text-base font-semibold text-[#0f2b23] dark:text-slate-100">Best-fit teams right now</h3>
               <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6 text-[#436058] dark:text-slate-300">
                 {icpProfiles.map((profile) => (
                   <li key={profile.id}>{profile.text}</li>
@@ -183,7 +188,7 @@ export const EmployerCTA = () => {
               </p>
             ) : null}
             <p className="text-center text-xs text-[#4d6961] dark:text-slate-400">
-              Structured pilot briefs are returned within two business days.
+              We send a pilot plan within two business days.
             </p>
           </form>
         </div>

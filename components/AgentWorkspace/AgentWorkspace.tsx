@@ -12,7 +12,7 @@ export const AgentWorkspace = () => {
             id="difference-title"
             className="mt-2 text-3xl font-semibold tracking-tight text-[#0a1f1a] dark:text-slate-100 md:text-4xl"
           >
-            <b>stu.</b> changes the timing and quality of hiring signal
+            <b>stu.</b> changes what recruiters can see before application season
           </h2>
 
           <div className="mt-6 space-y-3">
@@ -44,7 +44,7 @@ export const AgentWorkspace = () => {
             ))}
           </ul>
           <p className="mt-4 text-sm font-medium text-[#0f3027] dark:text-slate-100">
-            <b>stu.</b> is infrastructure that increases signal density in early-career hiring.
+            <b>stu.</b> gives teams clearer evidence before interviews, so early-career hiring decisions are less guesswork.
           </p>
         </Card>
       </div>

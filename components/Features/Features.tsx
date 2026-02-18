@@ -19,7 +19,7 @@ export const Features = ({ problems = problemSignals, solutions = solutionPillar
       <div className="rounded-3xl border border-[#cfddd6] bg-white/70 p-6 shadow-[0_18px_44px_-34px_rgba(10,31,26,0.45)] backdrop-blur dark:border-slate-700 dark:bg-slate-900/80">
         <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4a675f] dark:text-slate-400">Who this is for first</p>
         <h2 className="mt-2 text-2xl font-semibold tracking-tight text-[#0a1f1a] dark:text-slate-100 md:text-3xl">
-          Teams hiring at graduate scale and paying for low-signal screening
+          Teams hiring 50+ new grads a year who are tired of resume guesswork
         </h2>
         <div className="mt-5 flex flex-wrap gap-2">
           {icpProfiles.map((profile) => (
@@ -49,11 +49,11 @@ export const Features = ({ problems = problemSignals, solutions = solutionPillar
         </Card>
 
         <Card
-          header={<h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">How <b>stu.</b> restores signal density</h3>}
+          header={<h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">How <b>stu.</b> makes screening more reliable</h3>}
           className="bg-[#f8fdf9] dark:bg-slate-900/75"
         >
           <p className="text-sm leading-6 text-[#3f5b53] dark:text-slate-300">
-            <b>stu.</b> is infrastructure for capability translation, not another job board workflow.
+            <b>stu.</b> is not a job board. It is a scoring layer that turns student work into comparable hiring evidence.
           </p>
           <div className="mt-4 space-y-3">
             {solutions.map((pillar) => (

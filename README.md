@@ -1,6 +1,6 @@
 # stu-landing
 
-A component-first landing site for Stu built with Next.js + TypeScript, Tailwind CSS, Storybook, and Vitest.
+A component-first landing site for stu. built with Next.js + TypeScript, Tailwind CSS, Storybook, and Vitest.
 
 ## Project Overview
 
@@ -132,6 +132,7 @@ Set these in `.env.local` to enable telemetry:
 ```bash
 NEXT_PUBLIC_POSTHOG_KEY=phc_xxxxxxxxx
 NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+NEXT_PUBLIC_POSTHOG_ALLOWED_HOSTS=localhost,127.0.0.1,stuplanning.com,www.stuplanning.com
 ```
 
 Tracked events include:
@@ -140,3 +141,13 @@ Tracked events include:
 - Walkthrough entry and depth (`walkthrough_*`)
 - Pilot form outcomes (`pilot_request_submitted`, `pilot_request_failed`)
 - Frontend runtime errors (`frontend_error`, `frontend_unhandled_rejection`)
+
+## Hero Copy A/B Test
+
+Hero copy supports a PostHog feature flag:
+
+- Flag key: `landing_hero_copy_variant`
+- Control values: `control` or flag off
+- Variant B values: `concrete`, `test`, `variant`, `b`, `treatment` (or boolean `true`)
+
+Events emitted from hero and pilot submission include `heroCopyVariant` for conversion analysis.

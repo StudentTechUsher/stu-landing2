@@ -4,6 +4,16 @@ import { CandidateDetail } from '../CandidateDetail/CandidateDetail';
 import {
   oneMinutePitch
 } from '../../lib/mock/exampleData';
+import {
+  getPosthogFeatureFlag,
+  subscribeToPosthogFeatureFlags
+} from '../../lib/telemetry/posthog';
+import {
+  HERO_COPY_FLAG_KEY,
+  persistHeroCopyVariant,
+  resolveHeroCopyVariant,
+  type HeroCopyVariant
+} from '../../lib/telemetry/experiments';
 import { trackValidationEvent } from '../../lib/telemetry/validationEvents';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
@@ -12,6 +22,9 @@ import { emphasizeStu } from '../ui/emphasizeStu';
 export const HERO_HEADLINE = 'Start building hiring-ready talent — before they apply.';
 export const HERO_SUBHEAD =
   'stu. transforms fragmented student development into calibrated hiring signals — increasing interview conversion, reducing onboarding friction, and accelerating early-career performance.';
+const HERO_HEADLINE_CONCRETE = 'See who is ready for your entry-level roles before they apply.';
+const HERO_SUBHEAD_CONCRETE =
+  'Employers define the skills they hire for. Students connect coursework, projects, and internships. stu. turns that evidence into readiness scores so teams interview better-matched candidates.';
 const PILOT_PREFILL_MESSAGE = "Hi stu. Team, let's discuss a pilot program at my organization.";
 
 const secondaryCtaLinkClassName =
@@ -19,7 +32,10 @@ const secondaryCtaLinkClassName =
 
 export const Hero = () => {
   const [isBriefOpen, setIsBriefOpen] = useState(false);
+  const [heroCopyVariant, setHeroCopyVariant] = useState<HeroCopyVariant>('control');
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const heroHeadline = heroCopyVariant === 'concrete' ? HERO_HEADLINE_CONCRETE : HERO_HEADLINE;
+  const heroSubhead = heroCopyVariant === 'concrete' ? HERO_SUBHEAD_CONCRETE : HERO_SUBHEAD;
 
   const scrollToPilotForm = (prefillGoal?: string) => {
     const pilotSection = document.getElementById('pilot');
@@ -43,7 +59,8 @@ export const Hero = () => {
     trackValidationEvent('landing_cta_clicked', {
       ctaId: 'request_demo',
       location: 'hero_nav',
-      destination: '#pilot'
+      destination: '#pilot',
+      heroCopyVariant
     });
     scrollToPilotForm();
   };
@@ -52,7 +69,8 @@ export const Hero = () => {
     trackValidationEvent('landing_cta_clicked', {
       ctaId: 'request_employer_pilot',
       location: 'hero_primary',
-      destination: '#pilot'
+      destination: '#pilot',
+      heroCopyVariant
     });
     scrollToPilotForm(PILOT_PREFILL_MESSAGE);
   };
@@ -60,10 +78,27 @@ export const Hero = () => {
   const handleReadBriefClick = () => {
     trackValidationEvent('landing_cta_clicked', {
       ctaId: 'read_one_minute_brief',
-      location: 'hero_secondary'
+      location: 'hero_secondary',
+      heroCopyVariant
     });
     setIsBriefOpen(true);
   };
+
+  useEffect(() => {
+    const syncVariant = () => {
+      const flagValue = getPosthogFeatureFlag(HERO_COPY_FLAG_KEY);
+      const nextVariant = resolveHeroCopyVariant(flagValue);
+      setHeroCopyVariant(nextVariant);
+      persistHeroCopyVariant(nextVariant);
+    };
+
+    syncVariant();
+    const detach = subscribeToPosthogFeatureFlags(syncVariant);
+
+    return () => {
+      detach();
+    };
+  }, []);
 
   useEffect(() => {
     if (!isBriefOpen) return;
@@ -95,13 +130,13 @@ export const Hero = () => {
           </Link>
           <div className="hidden items-center gap-8 text-sm font-medium text-[#36524a] dark:text-slate-300 md:flex">
             <a href="#problem" className="transition-colors hover:text-[#0a1f1a] dark:hover:text-slate-100">
-              Problem
+              Why hiring misses
             </a>
             <a href="#model" className="transition-colors hover:text-[#0a1f1a] dark:hover:text-slate-100">
-              Model
+              How <b>stu.</b> works
             </a>
             <a href="#difference" className="transition-colors hover:text-[#0a1f1a] dark:hover:text-slate-100">
-              Differentiation
+              What changes
             </a>
           </div>
           <Button
@@ -117,12 +152,12 @@ export const Hero = () => {
         <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
           <div className="space-y-5 lg:flex lg:h-full lg:flex-col lg:justify-center">
             <Badge className="self-start bg-[#e9fef3] text-[#0a402d] ring-1 ring-[#b8e9ce] dark:bg-emerald-500/20 dark:text-emerald-100 dark:ring-emerald-400/30">
-              Early-talent intelligence layer
+              For teams hiring interns and new grads
             </Badge>
             <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-[#0a1f1a] dark:text-slate-100 md:text-5xl">
-              {HERO_HEADLINE}
+              {heroHeadline}
             </h1>
-            <p className="max-w-2xl text-lg leading-8 text-[#203c34] dark:text-slate-300">{emphasizeStu(HERO_SUBHEAD)}</p>
+            <p className="max-w-2xl text-lg leading-8 text-[#203c34] dark:text-slate-300">{emphasizeStu(heroSubhead)}</p>
             <div className="pt-2">
               <div className="flex justify-center">
                 <Button
@@ -150,10 +185,12 @@ export const Hero = () => {
                     trackValidationEvent('landing_cta_clicked', {
                       ctaId: 'see_how_it_works',
                       location: 'hero_secondary',
-                      destination: '/walkthrough'
+                      destination: '/walkthrough',
+                      heroCopyVariant
                     });
                     trackValidationEvent('walkthrough_entry_clicked', {
-                      source: 'hero'
+                      source: 'hero',
+                      heroCopyVariant
                     });
                   }}
                 >

@@ -1,7 +1,7 @@
 const footerLinks = [
-  { label: 'Problem', href: '#problem' },
-  { label: 'Model', href: '#model' },
-  { label: 'Differentiation', href: '#difference' },
+  { label: 'Why hiring misses', href: '#problem' },
+  { label: 'How stu. works', href: '#model' },
+  { label: 'What changes', href: '#difference' },
   { label: 'Pilot', href: '#pilot' },
   { label: 'Contact', href: '/contact' }
 ];

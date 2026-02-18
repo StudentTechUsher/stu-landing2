@@ -8,13 +8,12 @@ export const HowItWorks = ({ steps = defaultSteps }: HowItWorksProps) => {
   return (
     <section id="model" aria-labelledby="how-it-works-title" className="border-y border-[#cedbd6] bg-white/75">
       <div className="mx-auto w-full max-w-7xl px-6 py-20">
-        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4a675f]">Operating model</p>
+        <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4a675f]">How it works</p>
         <h2 id="how-it-works-title" className="mt-2 text-3xl font-semibold tracking-tight text-[#0a1f1a] md:text-4xl">
-          A feedback-driven early-talent intelligence layer
+          How <b>stu.</b> works in practice
         </h2>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-[#435f56]">
-          <b>stu.</b> translates employer hiring standards into measurable pathways, then uses outcomes to continuously
-          improve prediction quality.
+          Employers define role skills, students connect proof from classes and projects, and hiring outcomes make the scoring better each cycle.
         </p>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

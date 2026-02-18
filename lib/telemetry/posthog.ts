@@ -1,9 +1,13 @@
 type PostHogProperties = Record<string, unknown>;
+type PostHogFeatureFlagValue = string | boolean | undefined;
+type PostHogFeatureFlags = Record<string, string | boolean>;
 
 type PostHogClient = {
   init?: (apiKey: string, config?: PostHogProperties) => void;
   capture?: (eventName: string, properties?: PostHogProperties) => void;
   startSessionRecording?: () => void;
+  getFeatureFlag?: (key: string) => PostHogFeatureFlagValue;
+  onFeatureFlags?: (callback: (flags: string[], variants?: PostHogFeatureFlags) => void) => (() => void) | void;
 };
 
 declare global {
@@ -14,6 +18,7 @@ declare global {
 
 const DEFAULT_POSTHOG_HOST = 'https://us.i.posthog.com';
 const MAX_QUEUED_EVENTS = 200;
+const POSTHOG_READY_EVENT = 'stu:posthog-ready';
 
 let scriptLoadPromise: Promise<void> | null = null;
 let isInitializing = false;
@@ -124,10 +129,63 @@ export const initPosthog = () => {
       window.posthog.startSessionRecording?.();
       isInitialized = true;
       flushQueuedEvents();
+      window.dispatchEvent(new Event(POSTHOG_READY_EVENT));
     })
     .finally(() => {
       isInitializing = false;
     });
+};
+
+export const getPosthogFeatureFlag = (key: string): PostHogFeatureFlagValue => {
+  if (typeof window === 'undefined') return undefined;
+  if (!isPosthogEnabled()) return undefined;
+
+  initPosthog();
+  return window.posthog?.getFeatureFlag?.(key);
+};
+
+export const subscribeToPosthogFeatureFlags = (listener: () => void) => {
+  if (typeof window === 'undefined') {
+    return () => undefined;
+  }
+  if (!isPosthogEnabled()) {
+    return () => undefined;
+  }
+
+  let detachFeatureFlagListener: (() => void) | undefined;
+
+  const bindListener = () => {
+    if (!window.posthog?.onFeatureFlags) {
+      listener();
+      return;
+    }
+
+    const maybeDetach = window.posthog.onFeatureFlags(() => {
+      listener();
+    });
+
+    if (typeof maybeDetach === 'function') {
+      detachFeatureFlagListener = maybeDetach;
+    }
+
+    listener();
+  };
+
+  const handlePosthogReady = () => {
+    bindListener();
+  };
+
+  if (window.posthog?.onFeatureFlags) {
+    bindListener();
+  } else {
+    window.addEventListener(POSTHOG_READY_EVENT, handlePosthogReady, { once: true });
+    initPosthog();
+  }
+
+  return () => {
+    window.removeEventListener(POSTHOG_READY_EVENT, handlePosthogReady);
+    detachFeatureFlagListener?.();
+  };
 };
 
 export const capturePosthogEvent = (name: string, properties: PostHogProperties = {}) => {
