@@ -49,11 +49,11 @@ export const Features = ({ problems = problemSignals, solutions = solutionPillar
         </Card>
 
         <Card
-          header={<h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">How Stu restores signal density</h3>}
+          header={<h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">How <b>stu.</b> restores signal density</h3>}
           className="bg-[#f8fdf9] dark:bg-slate-900/75"
         >
           <p className="text-sm leading-6 text-[#3f5b53] dark:text-slate-300">
-            Stu is infrastructure for capability translation, not another job board workflow.
+            <b>stu.</b> is infrastructure for capability translation, not another job board workflow.
           </p>
           <div className="mt-4 space-y-3">
             {solutions.map((pillar) => (

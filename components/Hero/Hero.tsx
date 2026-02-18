@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { CandidateDetail } from '../CandidateDetail/CandidateDetail';
 import {
-  heroHighlights,
   oneMinutePitch
 } from '../../lib/mock/exampleData';
 import { trackValidationEvent } from '../../lib/telemetry/validationEvents';
@@ -15,8 +14,8 @@ export const HERO_SUBHEAD =
   'stu. transforms fragmented student development into calibrated hiring signals — increasing interview conversion, reducing onboarding friction, and accelerating early-career performance.';
 const PILOT_PREFILL_MESSAGE = "Hi stu. Team, let's discuss a pilot program at my organization.";
 
-const walkthroughCtaClassName =
-  'inline-flex h-12 items-center justify-center rounded-xl bg-white px-5 text-base font-semibold text-[#18372e] ring-1 ring-[#bdd0c8] shadow-[0_10px_25px_-22px_rgba(10,31,26,0.7)] transition-all hover:bg-[#eef5f2] hover:ring-[#9ab9ad] dark:bg-slate-100 dark:text-slate-900 dark:ring-slate-300 dark:hover:bg-slate-200 dark:hover:ring-slate-200';
+const secondaryCtaLinkClassName =
+  'inline-flex h-9 items-center justify-center rounded-xl bg-white px-3 text-sm font-semibold text-[#18372e] ring-1 ring-[#bdd0c8] shadow-[0_10px_25px_-22px_rgba(10,31,26,0.7)] transition-all hover:bg-[#eef5f2] hover:ring-[#9ab9ad] dark:bg-slate-100 dark:text-slate-900 dark:ring-slate-300 dark:hover:bg-slate-200 dark:hover:ring-slate-200';
 
 export const Hero = () => {
   const [isBriefOpen, setIsBriefOpen] = useState(false);
@@ -115,48 +114,52 @@ export const Hero = () => {
           </Button>
         </nav>
 
-        <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
-          <div className="space-y-5">
-            <Badge className="bg-[#e9fef3] text-[#0a402d] ring-1 ring-[#b8e9ce] dark:bg-emerald-500/20 dark:text-emerald-100 dark:ring-emerald-400/30">
+        <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
+          <div className="space-y-5 lg:flex lg:h-full lg:flex-col lg:justify-center">
+            <Badge className="self-start bg-[#e9fef3] text-[#0a402d] ring-1 ring-[#b8e9ce] dark:bg-emerald-500/20 dark:text-emerald-100 dark:ring-emerald-400/30">
               Early-talent intelligence layer
             </Badge>
             <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-[#0a1f1a] dark:text-slate-100 md:text-5xl">
               {HERO_HEADLINE}
             </h1>
             <p className="max-w-2xl text-lg leading-8 text-[#203c34] dark:text-slate-300">{emphasizeStu(HERO_SUBHEAD)}</p>
-            <div className="flex flex-wrap gap-3">
-              <Button
-                size="lg"
-                aria-label="Request Employer Pilot"
-                onClick={handleRequestEmployerPilotClick}
-              >
-                Request Employer Pilot
-              </Button>
-              <Button
-                variant="secondary"
-                size="lg"
-                aria-label="Read one-minute brief"
-                onClick={handleReadBriefClick}
-              >
-                Read one-minute brief
-              </Button>
-              <Link
-                href={{ pathname: '/walkthrough', query: { source: 'hero' } }}
-                aria-label="See how it works"
-                className={walkthroughCtaClassName}
-                onClick={() => {
-                  trackValidationEvent('landing_cta_clicked', {
-                    ctaId: 'see_how_it_works',
-                    location: 'hero_primary',
-                    destination: '/walkthrough'
-                  });
-                  trackValidationEvent('walkthrough_entry_clicked', {
-                    source: 'hero'
-                  });
-                }}
-              >
-                See how it works
-              </Link>
+            <div className="pt-2">
+              <div className="flex justify-center">
+                <Button
+                  size="lg"
+                  aria-label="Request Employer Pilot"
+                  onClick={handleRequestEmployerPilotClick}
+                >
+                  Request Employer Pilot
+                </Button>
+              </div>
+              <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  aria-label="Read one-minute brief"
+                  onClick={handleReadBriefClick}
+                >
+                  Read one-minute brief
+                </Button>
+                <Link
+                  href={{ pathname: '/walkthrough', query: { source: 'hero' } }}
+                  aria-label="See how it works"
+                  className={secondaryCtaLinkClassName}
+                  onClick={() => {
+                    trackValidationEvent('landing_cta_clicked', {
+                      ctaId: 'see_how_it_works',
+                      location: 'hero_secondary',
+                      destination: '/walkthrough'
+                    });
+                    trackValidationEvent('walkthrough_entry_clicked', {
+                      source: 'hero'
+                    });
+                  }}
+                >
+                  See how it works
+                </Link>
+              </div>
             </div>
           </div>
 
@@ -168,15 +171,26 @@ export const Hero = () => {
           </div>
         </div>
 
-        <div className="mt-8 grid gap-3 sm:grid-cols-3">
-          {heroHighlights.map((highlight) => (
-            <article
-              key={highlight}
-              className="rounded-2xl border border-[#cfe0d8] bg-white/70 px-4 py-2.5 text-sm font-medium text-[#26443b] dark:border-slate-700 dark:bg-slate-900/65 dark:text-slate-200"
-            >
-              {highlight}
-            </article>
-          ))}
+        <div className="mt-10 flex justify-center">
+          <a
+            href="#problem"
+            className="group inline-flex flex-col items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#42645a] transition-colors hover:text-[#0a1f1a] dark:text-slate-400 dark:hover:text-slate-100"
+            aria-label="Scroll to explore more details below"
+          >
+            <span>Scroll for details</span>
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#bfd2ca] bg-white/75 transition-colors group-hover:border-[#95b2a7] group-hover:bg-white dark:border-slate-700 dark:bg-slate-900/60 dark:group-hover:border-slate-500">
+              <svg
+                viewBox="0 0 20 20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                className="h-4 w-4 motion-safe:animate-bounce"
+                aria-hidden="true"
+              >
+                <path d="M5.5 8.5L10 13l4.5-4.5" />
+              </svg>
+            </span>
+          </a>
         </div>
       </div>
 

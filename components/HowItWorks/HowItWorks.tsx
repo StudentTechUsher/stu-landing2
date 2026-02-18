@@ -13,7 +13,7 @@ export const HowItWorks = ({ steps = defaultSteps }: HowItWorksProps) => {
           A feedback-driven early-talent intelligence layer
         </h2>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-[#435f56]">
-          Stu translates employer hiring standards into measurable pathways, then uses outcomes to continuously
+          <b>stu.</b> translates employer hiring standards into measurable pathways, then uses outcomes to continuously
           improve prediction quality.
         </p>
 

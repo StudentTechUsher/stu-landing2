@@ -141,17 +141,17 @@ export const differentiationSummary: Differentiator[] = [
   {
     id: 'd-1',
     traditional: 'LinkedIn and Handshake operate at application time.',
-    stu: 'Stu operates during development.'
+    stu: 'stu. operates during development.'
   },
   {
     id: 'd-2',
     traditional: 'Traditional hiring evaluates snapshots.',
-    stu: 'Stu evaluates longitudinal behavior.'
+    stu: 'stu. evaluates longitudinal behavior.'
   },
   {
     id: 'd-3',
     traditional: 'Prestige-based filtering amplifies bias.',
-    stu: 'Stu scores demonstrated capability.'
+    stu: 'stu. scores demonstrated capability.'
   }
 ];
 

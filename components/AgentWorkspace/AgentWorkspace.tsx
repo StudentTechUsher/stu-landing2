@@ -12,7 +12,7 @@ export const AgentWorkspace = () => {
             id="difference-title"
             className="mt-2 text-3xl font-semibold tracking-tight text-[#0a1f1a] dark:text-slate-100 md:text-4xl"
           >
-            Stu changes the timing and quality of hiring signal
+            <b>stu.</b> changes the timing and quality of hiring signal
           </h2>
 
           <div className="mt-6 space-y-3">
@@ -26,7 +26,7 @@ export const AgentWorkspace = () => {
                   <p className="mt-2 text-sm leading-6 text-[#4f6961] dark:text-slate-300">{comparison.traditional}</p>
                 </div>
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#0b3a2a] dark:text-emerald-300">With Stu</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#0b3a2a] dark:text-emerald-300">With <b>stu.</b></p>
                   <p className="mt-2 text-sm font-semibold leading-6 text-[#11352b] dark:text-slate-100">{comparison.stu}</p>
                 </div>
               </article>
@@ -44,7 +44,7 @@ export const AgentWorkspace = () => {
             ))}
           </ul>
           <p className="mt-4 text-sm font-medium text-[#0f3027] dark:text-slate-100">
-            Stu is infrastructure that increases signal density in early-career hiring.
+            <b>stu.</b> is infrastructure that increases signal density in early-career hiring.
           </p>
         </Card>
       </div>
