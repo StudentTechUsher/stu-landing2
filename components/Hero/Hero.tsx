@@ -19,12 +19,12 @@ import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { emphasizeStu } from '../ui/emphasizeStu';
 
-export const HERO_HEADLINE = 'Start building hiring-ready talent — before they apply.';
+export const HERO_HEADLINE = 'Stronger early-career hires start before the first interview.';
 export const HERO_SUBHEAD =
-  'stu. transforms fragmented student development into calibrated hiring signals — increasing interview conversion, reducing onboarding friction, and accelerating early-career performance.';
+  'stu. turns your hiring standards into a clear growth path for students, so your team can improve interview conversion, reduce onboarding friction, and strengthen early-career performance before applications open.';
 const HERO_HEADLINE_CONCRETE = 'See who is ready for your entry-level roles before they apply.';
 const HERO_SUBHEAD_CONCRETE =
-  'Employers define the skills they hire for. Students connect coursework, projects, and internships. stu. turns that evidence into readiness scores so teams interview better-matched candidates.';
+  'Employers define what great looks like. Students connect coursework, projects, and internships. stu. turns that evidence into readiness scores and next-step guidance so teams can improve interview conversion, reduce onboarding friction, and improve early-career performance.';
 const PILOT_PREFILL_MESSAGE = "Hi stu. Team, let's discuss a pilot program at my organization.";
 
 const secondaryCtaLinkClassName =

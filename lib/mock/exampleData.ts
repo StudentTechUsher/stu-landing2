@@ -121,13 +121,13 @@ export const operatingModelSteps: OperatingStep[] = [
     id: 'o-2',
     title: 'Collect student evidence',
     description:
-      'Student classes, projects, internships, and leadership work are converted into comparable evidence.'
+      'Student classes, projects, internships, leadership, competitions, and certifications are converted into comparable evidence.'
   },
   {
     id: 'o-3',
-    title: 'Generate readiness scores',
+    title: 'Guide improvement before apply',
     description:
-      'Students are scored against role scorecards instead of being screened only on resumes.'
+      'stu. scores each student against role scorecards and recommends the highest-impact next steps before they enter your pipeline.'
   },
   {
     id: 'o-4',

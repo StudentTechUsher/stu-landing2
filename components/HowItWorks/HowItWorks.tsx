@@ -1,4 +1,5 @@
 import { operatingModelSteps as defaultSteps, type OperatingStep } from '../../lib/mock/exampleData';
+import { WorkflowSplitView } from './WorkflowSplitView';
 
 export interface HowItWorksProps {
   steps?: OperatingStep[];
@@ -13,7 +14,7 @@ export const HowItWorks = ({ steps = defaultSteps }: HowItWorksProps) => {
           How <b>stu.</b> works in practice
         </h2>
         <p className="mt-4 max-w-3xl text-sm leading-7 text-[#435f56]">
-          Employers define role skills, students connect proof from classes and projects, and hiring outcomes make the scoring better each cycle.
+          Employers define role scorecards, students connect proof from classes and projects, stu. recommends the highest-impact next steps before applications open, and hiring outcomes make scoring better each cycle.
         </p>
 
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -30,6 +31,8 @@ export const HowItWorks = ({ steps = defaultSteps }: HowItWorksProps) => {
             </article>
           ))}
         </div>
+
+        <WorkflowSplitView />
       </div>
     </section>
   );

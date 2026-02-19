@@ -18,10 +18,10 @@ export default function HomePage() {
       </Head>
       <main className="min-h-screen text-[#0a1f1a]">
         <Hero />
+        <EmployerCTA />
         <Features />
         <HowItWorks />
         <AgentWorkspace />
-        <EmployerCTA />
       </main>
       <Footer />
     </>

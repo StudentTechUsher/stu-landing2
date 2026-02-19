@@ -19,6 +19,8 @@ export type CandidateDetailRecord = {
   anonymousLabel: string;
   targetRole: string;
   university: string;
+  educationProgram: string;
+  anticipatedGraduationYear: number;
   alignmentScore: number;
   alignmentBand: CandidateAlignmentBand;
   metadataTags: string[];
@@ -40,6 +42,8 @@ export const defaultCandidateDetail: CandidateDetailRecord = {
   anonymousLabel: 'Candidate 1042',
   targetRole: 'Product Analyst',
   university: 'Brigham Young University',
+  educationProgram: 'BYU BSIS',
+  anticipatedGraduationYear: 2028,
   alignmentScore: 91,
   alignmentBand: 'Standout',
   metadataTags: [
@@ -66,6 +70,8 @@ export const CandidateDetail = ({
   className = ''
 }: CandidateDetailProps) => {
   const displayName = anonymizedPreview ? candidate.anonymousLabel : candidate.fullName;
+  const cohortLabel = `${candidate.educationProgram} ${candidate.anticipatedGraduationYear} Cohort`;
+  const displayTitle = anonymizedPreview ? displayName : `${displayName} — ${cohortLabel}`;
   const avatarSrc = candidate.avatarSrc ?? defaultCandidateAvatar.src;
 
   return (
@@ -82,7 +88,7 @@ export const CandidateDetail = ({
               alt={anonymizedPreview ? 'Selected candidate profile avatar' : `${candidate.fullName} profile avatar`}
               className="h-11 w-11 rounded-xl border border-[#cfe0d8] object-cover shadow-[0_8px_20px_-14px_rgba(10,31,26,0.75)] dark:border-slate-700"
             />
-            <h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">{displayName}</h3>
+            <h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">{displayTitle}</h3>
           </div>
         </div>
       }
@@ -114,7 +120,11 @@ export const CandidateDetail = ({
 
       <div className="mt-3">
         <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">
-          Supporting capability detail
+          Top weighted capabilities for this role
+        </p>
+        <p className="mb-2 text-xs text-[#4a665e] dark:text-slate-300">
+          Showing the highest-priority capabilities in this recruiter-defined scorecard. Alignment scoring uses
+          additional indexed signals.
         </p>
         <div className="space-y-2">
           {candidate.capabilities.map((capability) => (
