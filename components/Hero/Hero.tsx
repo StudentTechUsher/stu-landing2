@@ -147,16 +147,16 @@ export const Hero = () => {
           </Button>
         </nav>
 
-        <div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-stretch">
-          <div className="space-y-5 lg:flex lg:h-full lg:flex-col lg:justify-center">
+        <div className="grid gap-8 lg:grid-cols-[1.28fr_0.72fr] lg:items-stretch lg:gap-10">
+          <div className="space-y-6 lg:flex lg:h-full lg:flex-col lg:justify-center lg:pr-8">
             <Badge className="self-start bg-[#e9fef3] text-[#0a402d] ring-1 ring-[#b8e9ce] dark:bg-emerald-500/20 dark:text-emerald-100 dark:ring-emerald-400/30">
               For teams hiring interns and new grads
             </Badge>
-            <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-[#0a1f1a] dark:text-slate-100 md:text-5xl">
+            <h1 className="max-w-3xl text-5xl font-semibold tracking-tight text-[#0a1f1a] dark:text-slate-100 md:text-6xl">
               {heroHeadline}
             </h1>
-            <p className="max-w-2xl text-lg leading-8 text-[#203c34] dark:text-slate-300">{emphasizeStu(heroSubhead)}</p>
-            <ol className="max-w-2xl list-decimal space-y-1 pl-6 text-base leading-7 text-[#203c34] dark:text-slate-300">
+            <p className="max-w-3xl text-xl leading-9 text-[#203c34] dark:text-slate-300">{emphasizeStu(heroSubhead)}</p>
+            <ol className="max-w-3xl list-decimal space-y-1.5 pl-6 text-lg leading-8 text-[#203c34] dark:text-slate-300">
               <li>Develop a clear capability model for new hires</li>
               <li>Better assess student readiness</li>
               <li>Identify and inspire growth opportunities</li>
@@ -203,10 +203,10 @@ export const Hero = () => {
             </div>
           </div>
 
-          <div className="min-w-0">
+          <div className="min-w-0 lg:flex lg:justify-end">
             <CandidateDetail
               showInviteButton={false}
-              className="rounded-[30px] border-[#cfdad5] bg-white/95 p-5 shadow-[0_24px_52px_-34px_rgba(10,31,26,0.45)] dark:border-slate-700 dark:bg-slate-900/80 dark:shadow-[0_26px_56px_-34px_rgba(2,6,23,0.9)]"
+              className="mx-auto w-full max-w-[480px] rounded-[26px] border-[#cfdad5] bg-white/95 p-4 shadow-[0_24px_52px_-34px_rgba(10,31,26,0.45)] lg:mx-0 lg:max-w-[440px] dark:border-slate-700 dark:bg-slate-900/80 dark:shadow-[0_26px_56px_-34px_rgba(2,6,23,0.9)]"
             />
           </div>
         </div>
