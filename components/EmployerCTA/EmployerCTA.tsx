@@ -85,7 +85,7 @@ export const EmployerCTA = () => {
           <div className="space-y-5">
             <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#4a675f] dark:text-slate-400">Pilot program</p>
             <h2 id="employer-cta-title" className="text-3xl font-semibold tracking-tight text-[#0a1f1a] dark:text-slate-100">
-              Run a pilot and track interview conversion, ramp time, and early retention
+              Run a pilot and track applicant quality, interview conversion, time-to-productivity, and early retention.
             </h2>
             <p className="text-sm leading-7 text-[#3f5a52] dark:text-slate-300">{emphasizeStu(economicClaim)}</p>
 
@@ -165,7 +165,7 @@ export const EmployerCTA = () => {
                 id="employer-goal"
                 name="goal"
                 className="min-h-24 w-full rounded-xl border border-[#bfd2ca] bg-white px-3 py-2 text-sm text-[#0a1f1a] placeholder:text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-400"
-                placeholder="Increase interview conversion, reduce ramp time, or lower early attrition"
+                placeholder="Improve applicant quality, increase interview conversion, shorten time-to-productivity, or improve early retention"
               />
             </div>
             <Button

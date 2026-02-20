@@ -51,7 +51,7 @@ export const longerVisionNarrative =
   'Over time, employers define role scorecards, students build evidence against them, and every hiring cycle makes the scoring more accurate.';
 
 export const economicClaim =
-  'If stu. improves interview conversion, shortens new-hire ramp time, or lowers early attrition, the savings can exceed subscription cost.';
+  'If stu. improves applicant quality, increases interview conversion, shortens time-to-productivity, or improves early retention, the savings can exceed subscription cost.';
 export const taglineOptions = [
   'Know who is ready before applications open.',
   'Turn student work into hiring evidence.',

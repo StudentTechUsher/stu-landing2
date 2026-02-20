@@ -19,12 +19,10 @@ import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { emphasizeStu } from '../ui/emphasizeStu';
 
-export const HERO_HEADLINE = 'Stronger early-career hires start before the first interview.';
-export const HERO_SUBHEAD =
-  'stu. turns your hiring standards into a clear growth path for students, so your team can improve interview conversion, reduce onboarding friction, and strengthen early-career performance before applications open.';
-const HERO_HEADLINE_CONCRETE = 'See who is ready for your entry-level roles before they apply.';
-const HERO_SUBHEAD_CONCRETE =
-  'Employers define what great looks like. Students connect coursework, projects, and internships. stu. turns that evidence into readiness scores and next-step guidance so teams can improve interview conversion, reduce onboarding friction, and improve early-career performance.';
+export const HERO_HEADLINE = 'Build a Stronger early-career Pipeline';
+export const HERO_SUBHEAD = 'Improve applicant quality, interview conversion, and time-to-productivity';
+const HERO_HEADLINE_CONCRETE = HERO_HEADLINE;
+const HERO_SUBHEAD_CONCRETE = HERO_SUBHEAD;
 const PILOT_PREFILL_MESSAGE = "Hi stu. Team, let's discuss a pilot program at my organization.";
 
 const secondaryCtaLinkClassName =
@@ -158,6 +156,11 @@ export const Hero = () => {
               {heroHeadline}
             </h1>
             <p className="max-w-2xl text-lg leading-8 text-[#203c34] dark:text-slate-300">{emphasizeStu(heroSubhead)}</p>
+            <ol className="max-w-2xl list-decimal space-y-1 pl-6 text-base leading-7 text-[#203c34] dark:text-slate-300">
+              <li>Develop a clear capability model for new hires</li>
+              <li>Better assess student readiness</li>
+              <li>Identify and inspire growth opportunities</li>
+            </ol>
             <div className="pt-2">
               <div className="flex justify-center">
                 <Button
