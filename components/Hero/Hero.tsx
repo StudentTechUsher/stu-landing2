@@ -160,7 +160,6 @@ export const Hero = () => {
               <li>Develop a clear capability model for new hires</li>
               <li>Better assess student readiness</li>
               <li>Identify and inspire growth opportunities</li>
-              <li>Proactively discover the best talent for your team</li>
             </ol>
             <div className="pt-2">
               <div className="flex justify-center">

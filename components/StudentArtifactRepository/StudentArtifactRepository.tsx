@@ -3,7 +3,7 @@ import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 
-type ArtifactType = 'coursework' | 'project' | 'certification' | 'leadership' | 'competition' | 'test';
+type ArtifactType = 'coursework' | 'project' | 'internship' | 'certification' | 'leadership' | 'competition' | 'test';
 type ArtifactFilter = 'all' | ArtifactType;
 type ProfileLinkKey = 'linkedin' | 'handshake' | 'github' | 'otherRepo';
 
@@ -23,6 +23,9 @@ type ArtifactRecord = {
   description: string;
   link?: string;
   attachmentName?: string;
+  referenceContactName?: string;
+  referenceContactRole?: string;
+  referenceQuote?: string;
   tags: ArtifactTag[];
   updatedAt: string;
 };
@@ -30,6 +33,7 @@ type ArtifactRecord = {
 const artifactTypes: Array<{ id: ArtifactType; label: string }> = [
   { id: 'coursework', label: 'Coursework' },
   { id: 'project', label: 'Projects' },
+  { id: 'internship', label: 'Internships' },
   { id: 'certification', label: 'Certifications' },
   { id: 'leadership', label: 'Clubs / leadership' },
   { id: 'competition', label: 'Competitions' },
@@ -48,6 +52,7 @@ const artifactTagOptions: ArtifactTag[] = [
 const artifactTypeLabelMap: Record<ArtifactType, string> = {
   coursework: 'Coursework',
   project: 'Project',
+  internship: 'Internship',
   certification: 'Certification',
   leadership: 'Leadership',
   competition: 'Competition',
@@ -57,6 +62,7 @@ const artifactTypeLabelMap: Record<ArtifactType, string> = {
 const artifactTypeSourcePreset: Record<ArtifactType, string> = {
   coursework: 'SIS sync',
   project: 'GitHub',
+  internship: 'Internship evidence',
   certification: 'Certification upload',
   leadership: 'Activity record',
   competition: 'Competition record',
@@ -66,6 +72,7 @@ const artifactTypeSourcePreset: Record<ArtifactType, string> = {
 const artifactTypeTagPreset: Record<ArtifactType, ArtifactTag[]> = {
   coursework: ['Technical depth', 'Systems thinking'],
   project: ['Applied execution', 'Technical depth'],
+  internship: ['Applied execution', 'Communication signal'],
   certification: ['Technical depth', 'Reliability signal'],
   leadership: ['Collaboration signal', 'Communication signal'],
   competition: ['Applied execution', 'Collaboration signal'],
@@ -75,6 +82,7 @@ const artifactTypeTagPreset: Record<ArtifactType, ArtifactTag[]> = {
 const artifactTypeToneClass: Record<ArtifactType, string> = {
   coursework: 'bg-sky-100 text-sky-800 dark:bg-sky-500/20 dark:text-sky-100',
   project: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-100',
+  internship: 'bg-lime-100 text-lime-800 dark:bg-lime-500/20 dark:text-lime-100',
   certification: 'bg-violet-100 text-violet-800 dark:bg-violet-500/20 dark:text-violet-100',
   leadership: 'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-100',
   competition: 'bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-500/20 dark:text-fuchsia-100',
@@ -153,6 +161,20 @@ const initialArtifacts: ArtifactRecord[] = [
     description: 'Built and presented a team prototype under 24-hour product constraints.',
     tags: ['Applied execution', 'Collaboration signal', 'Communication signal'],
     updatedAt: 'Feb 14, 2026'
+  },
+  {
+    id: 'artifact-7',
+    title: 'Summer Data Analytics Internship',
+    type: 'internship',
+    source: 'Internship evidence',
+    description:
+      'Built weekly anomaly monitoring for fulfillment metrics and reduced manual reporting cycle time for the operations team.',
+    referenceContactName: 'Morgan Patel',
+    referenceContactRole: 'Operations Analytics Manager, Elevate Logistics',
+    referenceQuote:
+      'The student built a monitoring workflow that cut our weekly reporting prep from four hours to under one hour and made issue follow-up far more consistent.',
+    tags: ['Applied execution', 'Communication signal', 'Reliability signal'],
+    updatedAt: 'Feb 18, 2026'
   }
 ];
 
@@ -292,6 +314,10 @@ export const StudentArtifactRepository = () => {
     setStatusMessage('CSV coursework import staged. Validate column mapping to finalize ingestion.');
   };
 
+  const createReferenceContact = () => {
+    setStatusMessage('Reference contact intake opened. Add name, role, contact details, and an impact quote.');
+  };
+
   const connectGithub = () => {
     setProfileLinks((current) => ({
       ...current,
@@ -364,17 +390,8 @@ export const StudentArtifactRepository = () => {
           <Button type="button" variant="secondary" size="sm" onClick={importCourseworkCSV}>
             Import coursework CSV
           </Button>
-          <Button type="button" variant="secondary" size="sm" onClick={connectGithub}>
-            Connect GitHub
-          </Button>
-          <Button type="button" variant="secondary" size="sm" onClick={connectLinkedIn}>
-            Connect LinkedIn
-          </Button>
-          <Button type="button" variant="secondary" size="sm" onClick={connectHandshake}>
-            Connect Handshake
-          </Button>
-          <Button type="button" variant="secondary" size="sm" onClick={connectOtherRepo}>
-            Connect other repo
+          <Button type="button" variant="secondary" size="sm" onClick={createReferenceContact}>
+            New reference contact
           </Button>
         </div>
 
@@ -457,6 +474,21 @@ export const StudentArtifactRepository = () => {
                         <p className="mt-1 text-xs font-medium text-[#3f5d54] dark:text-slate-300">
                           Document attached: {artifact.attachmentName}
                         </p>
+                      ) : null}
+
+                      {artifact.referenceQuote ? (
+                        <div className="mt-2 rounded-xl border border-[#d3e0da] bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900">
+                          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">
+                            Reference signal
+                          </p>
+                          <p className="mt-1 text-xs italic leading-5 text-[#48635b] dark:text-slate-300">
+                            &ldquo;{artifact.referenceQuote}&rdquo;
+                          </p>
+                          <p className="mt-1 text-[11px] text-[#4f6a62] dark:text-slate-400">
+                            {artifact.referenceContactName}
+                            {artifact.referenceContactRole ? ` · ${artifact.referenceContactRole}` : ''}
+                          </p>
+                        </div>
                       ) : null}
 
                       <div className="mt-2 flex flex-wrap gap-1.5">
@@ -657,6 +689,21 @@ export const StudentArtifactRepository = () => {
                     <p className="mt-2 text-xs font-medium text-[#3f5d54] dark:text-slate-300">
                       Document attached: {selectedArtifact.attachmentName}
                     </p>
+                  ) : null}
+
+                  {selectedArtifact.referenceQuote ? (
+                    <div className="mt-3 rounded-xl border border-[#d3e0da] bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">
+                        Reference signal
+                      </p>
+                      <p className="mt-1 text-xs italic leading-5 text-[#48635b] dark:text-slate-300">
+                        &ldquo;{selectedArtifact.referenceQuote}&rdquo;
+                      </p>
+                      <p className="mt-1 text-[11px] text-[#4f6a62] dark:text-slate-400">
+                        {selectedArtifact.referenceContactName}
+                        {selectedArtifact.referenceContactRole ? ` · ${selectedArtifact.referenceContactRole}` : ''}
+                      </p>
+                    </div>
                   ) : null}
 
                   <div className="mt-3 flex flex-wrap gap-1.5">

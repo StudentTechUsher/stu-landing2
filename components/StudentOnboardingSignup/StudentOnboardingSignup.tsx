@@ -83,6 +83,65 @@ const studentArchetypes: Array<{ id: StudentArchetype; label: string; detail: st
   { id: 'operator', label: 'Operator', detail: 'Learns by execution systems, reliability, and follow-through.' }
 ];
 
+const archetypeToneClass: Record<StudentArchetype, string> = {
+  builder:
+    'border-emerald-200 bg-emerald-50/80 hover:bg-emerald-100/70 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:hover:bg-emerald-900/30',
+  analyst:
+    'border-sky-200 bg-sky-50/80 hover:bg-sky-100/70 dark:border-sky-900/50 dark:bg-sky-950/30 dark:hover:bg-sky-900/30',
+  strategist:
+    'border-amber-200 bg-amber-50/80 hover:bg-amber-100/70 dark:border-amber-900/50 dark:bg-amber-950/30 dark:hover:bg-amber-900/30',
+  operator:
+    'border-slate-200 bg-slate-50/85 hover:bg-slate-100/75 dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800'
+};
+
+const archetypeIconToneClass: Record<StudentArchetype, string> = {
+  builder: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-100',
+  analyst: 'bg-sky-100 text-sky-800 dark:bg-sky-500/20 dark:text-sky-100',
+  strategist: 'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-100',
+  operator: 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-200'
+};
+
+const ArchetypeIcon = ({ archetypeId, className = 'h-4 w-4' }: { archetypeId: StudentArchetype; className?: string }) => {
+  if (archetypeId === 'builder') {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className}>
+        <path d="M4 16l5.5-5.5 4 4L20 8" />
+        <path d="M15 8h5v5" />
+      </svg>
+    );
+  }
+
+  if (archetypeId === 'analyst') {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className}>
+        <path d="M4 19h16" />
+        <path d="M7 16v-4" />
+        <path d="M12 16V8" />
+        <path d="M17 16v-7" />
+      </svg>
+    );
+  }
+
+  if (archetypeId === 'strategist') {
+    return (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className}>
+        <path d="M5 5h14v5H5z" />
+        <path d="M12 10v9" />
+        <path d="M8 19h8" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className={className}>
+      <path d="M6 7h12" />
+      <path d="M6 12h12" />
+      <path d="M6 17h12" />
+      <path d="M4 7h.01M4 12h.01M4 17h.01" />
+    </svg>
+  );
+};
+
 const learningModes: Array<{ id: LearningMode; label: string }> = [
   { id: 'project', label: 'Project-based learning' },
   { id: 'coursework', label: 'Coursework-first' },
@@ -619,13 +678,16 @@ export const StudentOnboardingSignup = ({
               </div>
 
               <div className="mt-3">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">Student archetype</p>
-                  <Button type="button" variant="secondary" size="sm" onClick={runArchetypeAssistant}>
-                    Need help choosing? Ask agent
+                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">Student archetype</p>
+                <div className="mt-2 flex justify-center">
+                  <Button type="button" size="sm" className="gap-1.5" onClick={runArchetypeAssistant}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3.5 w-3.5">
+                      <path d="M12 3l1.8 3.8L18 8.2l-3 2.8.7 4-3.7-2-3.7 2 .7-4-3-2.8 4.2-1.4L12 3z" />
+                    </svg>
+                    Need help choosing?
                   </Button>
                 </div>
-                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                <div className="mt-3 grid gap-2 sm:grid-cols-2">
                   {studentArchetypes.map((archetype) => {
                     const isActive = studentArchetype === archetype.id;
                     return (
@@ -635,12 +697,23 @@ export const StudentOnboardingSignup = ({
                         onClick={() => setStudentArchetype(archetype.id)}
                         className={`rounded-xl border px-3 py-2 text-left transition-colors ${
                           isActive
-                            ? 'border-[#0fd978] bg-[#e9fef3] dark:border-emerald-500 dark:bg-emerald-500/10'
-                            : 'border-[#d3e0da] bg-white hover:bg-[#f4faf7] dark:border-slate-700 dark:bg-slate-900 dark:hover:bg-slate-800'
+                            ? 'border-[#0fd978] bg-[#e9fef3] ring-1 ring-[#0fd978]/35 dark:border-emerald-500 dark:bg-emerald-500/10'
+                            : archetypeToneClass[archetype.id]
                         }`}
                       >
-                        <p className="text-sm font-semibold text-[#11352b] dark:text-slate-100">{archetype.label}</p>
-                        <p className="mt-1 text-[11px] leading-4 text-[#48635b] dark:text-slate-300">{archetype.detail}</p>
+                        <div className="flex items-start gap-2.5">
+                          <span
+                            className={`mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg ${
+                              isActive ? 'bg-[#12f987] text-[#0a1f1a]' : archetypeIconToneClass[archetype.id]
+                            }`}
+                          >
+                            <ArchetypeIcon archetypeId={archetype.id} />
+                          </span>
+                          <span>
+                            <span className="block text-sm font-semibold text-[#11352b] dark:text-slate-100">{archetype.label}</span>
+                            <span className="mt-1 block text-[11px] leading-4 text-[#48635b] dark:text-slate-300">{archetype.detail}</span>
+                          </span>
+                        </div>
                       </button>
                     );
                   })}
@@ -657,7 +730,12 @@ export const StudentOnboardingSignup = ({
 
                     {recommendedArchetype && archetypeAgentResult ? (
                       <>
-                        <p className="mt-2 text-sm font-semibold text-[#11352b] dark:text-slate-100">{recommendedArchetype.label}</p>
+                        <div className="mt-2 flex items-center gap-2">
+                          <span className={`inline-flex h-7 w-7 items-center justify-center rounded-lg ${archetypeIconToneClass[recommendedArchetype.id]}`}>
+                            <ArchetypeIcon archetypeId={recommendedArchetype.id} />
+                          </span>
+                          <p className="text-sm font-semibold text-[#11352b] dark:text-slate-100">{recommendedArchetype.label}</p>
+                        </div>
                         <p className="mt-1 text-xs leading-5 text-[#48635b] dark:text-slate-300">{recommendedArchetype.detail}</p>
                         <p className="mt-1 text-xs leading-5 text-[#48635b] dark:text-slate-300">
                           Why this fit: {archetypeAgentResult.reason}
