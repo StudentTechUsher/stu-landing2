@@ -13,6 +13,20 @@ const bandClassMap: Record<CandidateAlignmentBand, string> = {
 };
 
 type CapabilityScore = { label: string; score: number };
+type VideoSignal = { label: string; duration: string; url: string };
+type ReferenceContact = {
+  fullName: string;
+  role: string;
+  organization: string;
+  email: string;
+  phone: string;
+  quote: string;
+};
+type QualitativeSignals = {
+  introVideo: VideoSignal;
+  projectDemoVideo: VideoSignal;
+  references: ReferenceContact[];
+};
 
 export type CandidateDetailRecord = {
   fullName: string;
@@ -25,12 +39,14 @@ export type CandidateDetailRecord = {
   alignmentBand: CandidateAlignmentBand;
   metadataTags: string[];
   capabilities: CapabilityScore[];
+  qualitativeSignals?: QualitativeSignals;
   avatarSrc?: string;
 };
 
 export interface CandidateDetailProps {
   candidate?: CandidateDetailRecord;
   anonymizedPreview?: boolean;
+  showQualitativeSignals?: boolean;
   showInviteButton?: boolean;
   invited?: boolean;
   onInvite?: () => void;
@@ -58,12 +74,51 @@ export const defaultCandidateDetail: CandidateDetailRecord = {
     { label: 'Execution reliability', score: 88 },
     { label: 'Collaboration', score: 86 },
     { label: 'Business judgment', score: 87 }
-  ]
+  ],
+  qualitativeSignals: {
+    introVideo: {
+      label: 'Get to know you',
+      duration: '1:30',
+      url: 'https://videos.stu.dev/avery-park-intro'
+    },
+    projectDemoVideo: {
+      label: 'Project demo',
+      duration: '3:45',
+      url: 'https://videos.stu.dev/avery-park-project-demo'
+    },
+    references: [
+      {
+        fullName: 'Nicole Jensen',
+        role: 'Capstone Faculty Advisor',
+        organization: 'Brigham Young University',
+        email: 'nicole.jensen@byu.edu',
+        phone: '(801) 555-0102',
+        quote: 'Avery translates ambiguous project requirements into clean experiments and clearly communicates tradeoffs.'
+      },
+      {
+        fullName: 'Ethan Roberts',
+        role: 'Product Manager Intern Supervisor',
+        organization: 'Acme Growth Labs',
+        email: 'ethan.roberts@acmegrowth.com',
+        phone: '(312) 555-0144',
+        quote: 'Avery ran weekly updates with design and analytics and consistently surfaced the right decision risks early.'
+      },
+      {
+        fullName: 'Maya Collins',
+        role: 'Student Org President Mentor',
+        organization: 'AIS Chapter at BYU',
+        email: 'maya.collins@alumni.byu.edu',
+        phone: '(385) 555-0188',
+        quote: 'When deadlines stacked up, Avery still kept the team organized and delivered polished client-ready work.'
+      }
+    ]
+  }
 };
 
 export const CandidateDetail = ({
   candidate = defaultCandidateDetail,
   anonymizedPreview = false,
+  showQualitativeSignals = true,
   showInviteButton = true,
   invited = false,
   onInvite,
@@ -73,6 +128,11 @@ export const CandidateDetail = ({
   const cohortLabel = `${candidate.educationProgram} ${candidate.anticipatedGraduationYear} Cohort`;
   const displayTitle = anonymizedPreview ? displayName : `${displayName} — ${cohortLabel}`;
   const avatarSrc = candidate.avatarSrc ?? defaultCandidateAvatar.src;
+  const openSignalLink = (url: string) => {
+    if (typeof window !== 'undefined') {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
 
   return (
     <Card
@@ -143,6 +203,58 @@ export const CandidateDetail = ({
           ))}
         </div>
       </div>
+
+      {showQualitativeSignals && candidate.qualitativeSignals ? (
+        <div className="mt-3 rounded-xl border border-[#d4e1db] bg-[#f8fcfa] p-3 dark:border-slate-700 dark:bg-slate-900">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#3f5f54] dark:text-slate-400">Beyond the resume</p>
+          <p className="mt-1 text-xs text-[#4a665e] dark:text-slate-300">
+            Structured qualitative signal layered on top of capability scoring.
+          </p>
+          <div className="mt-3 grid gap-2 sm:grid-cols-2">
+            {[candidate.qualitativeSignals.introVideo, candidate.qualitativeSignals.projectDemoVideo].map((video) => (
+              <article
+                key={`${candidate.fullName}-${video.label}`}
+                className="rounded-xl border border-[#d4e1db] bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900"
+              >
+                <p className="text-sm font-semibold text-[#12392f] dark:text-slate-100">{video.label}</p>
+                <p className="mt-0.5 text-xs text-[#4a665e] dark:text-slate-300">Duration {video.duration}</p>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="secondary"
+                  className="mt-2 w-full"
+                  onClick={() => openSignalLink(video.url)}
+                >
+                  Open video
+                </Button>
+              </article>
+            ))}
+          </div>
+
+          <div className="mt-3 space-y-2">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">
+              Reference contacts
+            </p>
+            {candidate.qualitativeSignals.references.map((reference) => (
+              <article
+                key={`${candidate.fullName}-${reference.email}`}
+                className="rounded-xl border border-[#d4e1db] bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900"
+              >
+                <p className="text-sm font-semibold text-[#12392f] dark:text-slate-100">{reference.fullName}</p>
+                <p className="text-xs text-[#4a665e] dark:text-slate-300">
+                  {reference.role} · {reference.organization}
+                </p>
+                <p className="mt-2 text-xs italic leading-5 text-[#36544b] dark:text-slate-300">
+                  &quot;{reference.quote}&quot;
+                </p>
+                <p className="mt-2 text-xs text-[#4a665e] dark:text-slate-300">
+                  {anonymizedPreview ? 'Reveal candidate identity to access contact info.' : `${reference.email} · ${reference.phone}`}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
       {showInviteButton ? (
         <Button type="button" className="mt-4 w-full" onClick={onInvite}>

@@ -160,6 +160,7 @@ export const Hero = () => {
               <li>Develop a clear capability model for new hires</li>
               <li>Better assess student readiness</li>
               <li>Identify and inspire growth opportunities</li>
+              <li>Proactively discover the best talent for your team</li>
             </ol>
             <div className="pt-2">
               <div className="flex justify-center">
@@ -206,6 +207,7 @@ export const Hero = () => {
           <div className="min-w-0 lg:flex lg:justify-end">
             <CandidateDetail
               showInviteButton={false}
+              showQualitativeSignals={false}
               className="mx-auto w-full max-w-[480px] rounded-[26px] border-[#cfdad5] bg-white/95 p-4 shadow-[0_24px_52px_-34px_rgba(10,31,26,0.45)] lg:mx-0 lg:max-w-[440px] dark:border-slate-700 dark:bg-slate-900/80 dark:shadow-[0_26px_56px_-34px_rgba(2,6,23,0.9)]"
             />
           </div>

@@ -14,6 +14,12 @@ type Story = StoryObj<typeof CandidateDetail>;
 
 export const Standout: Story = {};
 
+export const RecruiterSignals: Story = {
+  args: {
+    showQualitativeSignals: true
+  }
+};
+
 export const AnonymousPreview: Story = {
   args: {
     anonymizedPreview: true,
@@ -23,6 +29,7 @@ export const AnonymousPreview: Story = {
 
 export const EmbeddedPreview: Story = {
   args: {
+    showQualitativeSignals: false,
     showInviteButton: false
   }
 };

@@ -895,7 +895,106 @@ export const EmployerDashboardPipelineOverview = ({ pool = defaultStudentPool }:
           </div>
         </div>
 
-        <div className="mt-7 grid gap-4 xl:gap-3 xl:grid-cols-[0.75fr_0.9fr_1.35fr]">
+        <div className="mt-7 grid gap-4 xl:gap-3 xl:grid-cols-2">
+          <Card
+            className="bg-[#f5fbf8] xl:col-span-2 dark:bg-slate-900/70"
+            header={
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#55736a] dark:text-slate-400">
+                  Pipeline snapshot
+                </p>
+                <h3 className="mt-1 text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">Current cut</h3>
+              </div>
+            }
+          >
+            <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <div className="rounded-xl border border-[#d4e1db] bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900">
+                <dt className="text-xs uppercase tracking-[0.08em] text-[#547067] dark:text-slate-400">Students</dt>
+                <dd className="mt-1 text-2xl font-semibold text-[#0f2b23] dark:text-slate-100">{filteredPool.length}</dd>
+                <button
+                  type="button"
+                  onClick={() => openPipelineView('all')}
+                  className="mt-2 text-xs font-semibold text-[#1f5b49] underline decoration-[#9acbb8] decoration-2 underline-offset-2 transition-colors hover:text-[#134334] dark:text-emerald-300 dark:decoration-emerald-500/40 dark:hover:text-emerald-200"
+                >
+                  {pipelineDrawerCopy.all.actionLabel}
+                </button>
+              </div>
+              <div className="rounded-xl border border-[#d4e1db] bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900">
+                <dt className="text-xs uppercase tracking-[0.08em] text-[#547067] dark:text-slate-400">Avg score</dt>
+                <dd className="mt-1 text-2xl font-semibold text-[#0f2b23] dark:text-slate-100">{averageAlignmentScore}</dd>
+                <button
+                  type="button"
+                  onClick={() => openPipelineView('highScore')}
+                  className="mt-2 text-xs font-semibold text-[#1f5b49] underline decoration-[#9acbb8] decoration-2 underline-offset-2 transition-colors hover:text-[#134334] dark:text-emerald-300 dark:decoration-emerald-500/40 dark:hover:text-emerald-200"
+                >
+                  {pipelineDrawerCopy.highScore.actionLabel}
+                </button>
+              </div>
+              <div className="rounded-xl border border-[#d4e1db] bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900">
+                <dt className="flex items-center gap-1.5 text-xs uppercase tracking-[0.08em] text-[#547067] dark:text-slate-400">
+                  <span>Ready+ share</span>
+                  <span className="group relative">
+                    <button
+                      type="button"
+                      className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-[#c4d5ce] text-[10px] font-bold text-[#36524a] dark:border-slate-600 dark:text-slate-300"
+                      aria-label="How to read Ready plus share"
+                    >
+                      i
+                    </button>
+                    <span
+                      role="tooltip"
+                      className="pointer-events-none absolute left-0 top-5 z-20 w-[min(16rem,calc(100vw-3rem))] rounded-lg border border-[#d2dfd9] bg-white p-2.5 text-[11px] normal-case leading-4 text-[#3f5a52] opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300 xl:left-auto xl:right-0"
+                    >
+                      Percent of filtered opted-in students currently in the Ready or Standout capability bands.
+                    </span>
+                  </span>
+                </dt>
+                <dd className="mt-1 text-2xl font-semibold text-[#0f2b23] dark:text-slate-100">{readyAndStandoutShare}%</dd>
+                <button
+                  type="button"
+                  onClick={() => openPipelineView('readyPlus')}
+                  className="mt-2 text-xs font-semibold text-[#1f5b49] underline decoration-[#9acbb8] decoration-2 underline-offset-2 transition-colors hover:text-[#134334] dark:text-emerald-300 dark:decoration-emerald-500/40 dark:hover:text-emerald-200"
+                >
+                  {pipelineDrawerCopy.readyPlus.actionLabel}
+                </button>
+              </div>
+              <div className="rounded-xl border border-[#d4e1db] bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900">
+                <dt className="text-xs uppercase tracking-[0.08em] text-[#547067] dark:text-slate-400">Top signal</dt>
+                <dd className="mt-1 text-sm font-semibold text-[#0f2b23] dark:text-slate-100">{topDimension}</dd>
+                <button
+                  type="button"
+                  onClick={() => openPipelineView('topSignal')}
+                  className="mt-2 text-xs font-semibold text-[#1f5b49] underline decoration-[#9acbb8] decoration-2 underline-offset-2 transition-colors hover:text-[#134334] dark:text-emerald-300 dark:decoration-emerald-500/40 dark:hover:text-emerald-200"
+                >
+                  {pipelineDrawerCopy.topSignal.actionLabel}
+                </button>
+              </div>
+            </dl>
+
+            <div className="mt-4 rounded-2xl border border-[#d4e1db] bg-white p-3 dark:border-slate-700 dark:bg-slate-900">
+              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#547067] dark:text-slate-400">
+                Capability band counts
+              </p>
+              <div className="mt-2 space-y-2">
+                {bandCounts.map((entry) => (
+                  <div
+                    key={entry.band}
+                    className="flex items-center justify-between text-sm font-medium text-[#2f4d44] dark:text-slate-300"
+                  >
+                    <span>{entry.band}</span>
+                    <span>{entry.count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {filteredPool.length === 0 ? (
+              <p className="mt-4 rounded-xl border border-[#d4e1db] bg-white px-3 py-2 text-xs font-medium text-[#4f6a62] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
+                No opted-in students match the current filter combination.
+              </p>
+            ) : null}
+          </Card>
+
           <Card
             className="bg-white/95 p-5 dark:bg-slate-900/80"
             header={
@@ -1048,104 +1147,6 @@ export const EmployerDashboardPipelineOverview = ({ pool = defaultStudentPool }:
             </div>
           </Card>
 
-          <Card
-            className="bg-[#f5fbf8] dark:bg-slate-900/70"
-            header={
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.1em] text-[#55736a] dark:text-slate-400">
-                  Pipeline snapshot
-                </p>
-                <h3 className="mt-1 text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">Current cut</h3>
-              </div>
-            }
-          >
-            <dl className="grid grid-cols-1 gap-3">
-              <div className="rounded-xl border border-[#d4e1db] bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900">
-                <dt className="text-xs uppercase tracking-[0.08em] text-[#547067] dark:text-slate-400">Students</dt>
-                <dd className="mt-1 text-2xl font-semibold text-[#0f2b23] dark:text-slate-100">{filteredPool.length}</dd>
-                <button
-                  type="button"
-                  onClick={() => openPipelineView('all')}
-                  className="mt-2 text-xs font-semibold text-[#1f5b49] underline decoration-[#9acbb8] decoration-2 underline-offset-2 transition-colors hover:text-[#134334] dark:text-emerald-300 dark:decoration-emerald-500/40 dark:hover:text-emerald-200"
-                >
-                  {pipelineDrawerCopy.all.actionLabel}
-                </button>
-              </div>
-              <div className="rounded-xl border border-[#d4e1db] bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900">
-                <dt className="text-xs uppercase tracking-[0.08em] text-[#547067] dark:text-slate-400">Avg score</dt>
-                <dd className="mt-1 text-2xl font-semibold text-[#0f2b23] dark:text-slate-100">{averageAlignmentScore}</dd>
-                <button
-                  type="button"
-                  onClick={() => openPipelineView('highScore')}
-                  className="mt-2 text-xs font-semibold text-[#1f5b49] underline decoration-[#9acbb8] decoration-2 underline-offset-2 transition-colors hover:text-[#134334] dark:text-emerald-300 dark:decoration-emerald-500/40 dark:hover:text-emerald-200"
-                >
-                  {pipelineDrawerCopy.highScore.actionLabel}
-                </button>
-              </div>
-              <div className="rounded-xl border border-[#d4e1db] bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900">
-                <dt className="flex items-center gap-1.5 text-xs uppercase tracking-[0.08em] text-[#547067] dark:text-slate-400">
-                  <span>Ready+ share</span>
-                  <span className="group relative">
-                    <button
-                      type="button"
-                      className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-[#c4d5ce] text-[10px] font-bold text-[#36524a] dark:border-slate-600 dark:text-slate-300"
-                      aria-label="How to read Ready plus share"
-                    >
-                      i
-                    </button>
-                    <span
-                      role="tooltip"
-                      className="pointer-events-none absolute left-0 top-5 z-20 w-[min(16rem,calc(100vw-3rem))] rounded-lg border border-[#d2dfd9] bg-white p-2.5 text-[11px] normal-case leading-4 text-[#3f5a52] opacity-0 shadow-lg transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300 xl:left-auto xl:right-0"
-                    >
-                      Percent of filtered opted-in students currently in the Ready or Standout capability bands.
-                    </span>
-                  </span>
-                </dt>
-                <dd className="mt-1 text-2xl font-semibold text-[#0f2b23] dark:text-slate-100">{readyAndStandoutShare}%</dd>
-                <button
-                  type="button"
-                  onClick={() => openPipelineView('readyPlus')}
-                  className="mt-2 text-xs font-semibold text-[#1f5b49] underline decoration-[#9acbb8] decoration-2 underline-offset-2 transition-colors hover:text-[#134334] dark:text-emerald-300 dark:decoration-emerald-500/40 dark:hover:text-emerald-200"
-                >
-                  {pipelineDrawerCopy.readyPlus.actionLabel}
-                </button>
-              </div>
-              <div className="rounded-xl border border-[#d4e1db] bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900">
-                <dt className="text-xs uppercase tracking-[0.08em] text-[#547067] dark:text-slate-400">Top signal</dt>
-                <dd className="mt-1 text-sm font-semibold text-[#0f2b23] dark:text-slate-100">{topDimension}</dd>
-                <button
-                  type="button"
-                  onClick={() => openPipelineView('topSignal')}
-                  className="mt-2 text-xs font-semibold text-[#1f5b49] underline decoration-[#9acbb8] decoration-2 underline-offset-2 transition-colors hover:text-[#134334] dark:text-emerald-300 dark:decoration-emerald-500/40 dark:hover:text-emerald-200"
-                >
-                  {pipelineDrawerCopy.topSignal.actionLabel}
-                </button>
-              </div>
-            </dl>
-
-            <div className="mt-4 rounded-2xl border border-[#d4e1db] bg-white p-3 dark:border-slate-700 dark:bg-slate-900">
-              <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#547067] dark:text-slate-400">
-                Capability band counts
-              </p>
-              <div className="mt-2 space-y-2">
-                {bandCounts.map((entry) => (
-                  <div
-                    key={entry.band}
-                    className="flex items-center justify-between text-sm font-medium text-[#2f4d44] dark:text-slate-300"
-                  >
-                    <span>{entry.band}</span>
-                    <span>{entry.count}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {filteredPool.length === 0 ? (
-              <p className="mt-4 rounded-xl border border-[#d4e1db] bg-white px-3 py-2 text-xs font-medium text-[#4f6a62] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
-                No opted-in students match the current filter combination.
-              </p>
-            ) : null}
-          </Card>
         </div>
       </div>
 

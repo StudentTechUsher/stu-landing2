@@ -5,6 +5,7 @@ import { Card } from '../ui/Card';
 
 type ArtifactType = 'coursework' | 'project' | 'certification' | 'leadership' | 'competition' | 'test';
 type ArtifactFilter = 'all' | ArtifactType;
+type ProfileLinkKey = 'linkedin' | 'handshake' | 'github' | 'otherRepo';
 
 type ArtifactTag =
   | 'Technical depth'
@@ -89,6 +90,13 @@ const tagToneClass: Record<ArtifactTag, string> = {
   'Reliability signal': 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200'
 };
 
+const profileLinkLabelMap: Record<ProfileLinkKey, string> = {
+  linkedin: 'LinkedIn',
+  handshake: 'Handshake',
+  github: 'GitHub',
+  otherRepo: 'Other repo'
+};
+
 const initialArtifacts: ArtifactRecord[] = [
   {
     id: 'artifact-1',
@@ -160,6 +168,14 @@ export const StudentArtifactRepository = () => {
   const [activeFilter, setActiveFilter] = useState<ArtifactFilter>('all');
   const [selectedArtifactId, setSelectedArtifactId] = useState(initialArtifacts[0]?.id ?? null);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [profileLinks, setProfileLinks] = useState<Record<ProfileLinkKey, string>>({
+    linkedin: '',
+    handshake: '',
+    github: '',
+    otherRepo: ''
+  });
+  const [getToKnowVideoName, setGetToKnowVideoName] = useState('');
+  const [projectDemoVideoNames, setProjectDemoVideoNames] = useState<string[]>([]);
 
   const [draftType, setDraftType] = useState<ArtifactType>('coursework');
   const [draftTitle, setDraftTitle] = useState('');
@@ -168,6 +184,8 @@ export const StudentArtifactRepository = () => {
   const [draftLink, setDraftLink] = useState('');
   const [draftAttachmentName, setDraftAttachmentName] = useState('');
   const documentInputRef = useRef<HTMLInputElement | null>(null);
+  const getToKnowVideoInputRef = useRef<HTMLInputElement | null>(null);
+  const projectDemoVideoInputRef = useRef<HTMLInputElement | null>(null);
   const calculatedDraftTags = artifactTypeTagPreset[draftType];
 
   const filteredArtifacts = useMemo(() => {
@@ -193,6 +211,10 @@ export const StudentArtifactRepository = () => {
     return Math.max(...signalCoverage.map((item) => item.count), 1);
   }, [signalCoverage]);
 
+  const connectedProfileEntries = useMemo(() => {
+    return (Object.entries(profileLinks) as Array<[ProfileLinkKey, string]>).filter(([, value]) => value.trim().length > 0);
+  }, [profileLinks]);
+
   const handleDraftTypeChange = (nextType: ArtifactType) => {
     setDraftType(nextType);
     setDraftSource(artifactTypeSourcePreset[nextType]);
@@ -204,6 +226,31 @@ export const StudentArtifactRepository = () => {
     if (!file) return;
     setDraftAttachmentName(file.name);
     setStatusMessage(`Attached document: ${file.name}.`);
+  };
+
+  const handleProfileLinkChange = (key: ProfileLinkKey, value: string) => {
+    setProfileLinks((current) => ({
+      ...current,
+      [key]: value
+    }));
+  };
+
+  const handleGetToKnowVideoSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setGetToKnowVideoName(file.name);
+    setStatusMessage(`Uploaded Get to Know You video: ${file.name}.`);
+  };
+
+  const handleProjectDemoVideoSelect = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    if (files.length === 0) return;
+    const incomingNames = files.map((file) => file.name);
+    setProjectDemoVideoNames((current) => {
+      const next = new Set([...current, ...incomingNames]);
+      return Array.from(next);
+    });
+    setStatusMessage(`Uploaded ${incomingNames.length} project demo video${incomingNames.length === 1 ? '' : 's'}.`);
   };
 
   const addArtifact = () => {
@@ -246,11 +293,44 @@ export const StudentArtifactRepository = () => {
   };
 
   const connectGithub = () => {
+    setProfileLinks((current) => ({
+      ...current,
+      github: current.github || 'https://github.com/username'
+    }));
     setStatusMessage('GitHub link flow started. New project artifacts will be suggested after repository scan.');
   };
 
   const connectLinkedIn = () => {
+    setProfileLinks((current) => ({
+      ...current,
+      linkedin: current.linkedin || 'https://linkedin.com/in/username'
+    }));
     setStatusMessage('LinkedIn profile connected. Leadership and competition entries can now be imported as artifacts.');
+  };
+
+  const connectHandshake = () => {
+    setProfileLinks((current) => ({
+      ...current,
+      handshake: current.handshake || 'https://joinhandshake.com/stu-profile'
+    }));
+    setStatusMessage('Handshake profile connected. Experience and applications can now be referenced as evidence.');
+  };
+
+  const connectOtherRepo = () => {
+    setProfileLinks((current) => ({
+      ...current,
+      otherRepo: current.otherRepo || 'https://gitlab.com/username/project'
+    }));
+    setStatusMessage('Additional project repository connected. External code evidence is now linkable.');
+  };
+
+  const saveExternalLinks = () => {
+    if (connectedProfileEntries.length === 0) {
+      setStatusMessage('Add at least one profile or repository link before saving.');
+      return;
+    }
+
+    setStatusMessage(`Saved ${connectedProfileEntries.length} connected profile source${connectedProfileEntries.length === 1 ? '' : 's'}.`);
   };
 
   return (
@@ -285,10 +365,16 @@ export const StudentArtifactRepository = () => {
             Import coursework CSV
           </Button>
           <Button type="button" variant="secondary" size="sm" onClick={connectGithub}>
-            Connect GitHub / portfolio
+            Connect GitHub
           </Button>
           <Button type="button" variant="secondary" size="sm" onClick={connectLinkedIn}>
             Connect LinkedIn
+          </Button>
+          <Button type="button" variant="secondary" size="sm" onClick={connectHandshake}>
+            Connect Handshake
+          </Button>
+          <Button type="button" variant="secondary" size="sm" onClick={connectOtherRepo}>
+            Connect other repo
           </Button>
         </div>
 
@@ -407,6 +493,148 @@ export const StudentArtifactRepository = () => {
           </Card>
 
           <div className="space-y-4">
+            <Card
+              className="bg-white/95 p-5 dark:bg-slate-900/80"
+              header={<h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">Profile links and video uploads</h3>}
+            >
+              <p className="text-xs leading-5 text-[#4f6a62] dark:text-slate-300">
+                Link external profiles and repositories recruiters already use, then upload short videos for human signal.
+              </p>
+
+              <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                <label className="text-xs font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">
+                  LinkedIn URL
+                  <input
+                    value={profileLinks.linkedin}
+                    onChange={(event) => handleProfileLinkChange('linkedin', event.target.value)}
+                    placeholder="https://linkedin.com/in/username"
+                    className="mt-2 h-11 w-full rounded-xl border border-[#bfd2ca] bg-white px-3 text-sm text-[#0a1f1a] dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
+                  />
+                </label>
+
+                <label className="text-xs font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">
+                  Handshake URL
+                  <input
+                    value={profileLinks.handshake}
+                    onChange={(event) => handleProfileLinkChange('handshake', event.target.value)}
+                    placeholder="https://joinhandshake.com/..."
+                    className="mt-2 h-11 w-full rounded-xl border border-[#bfd2ca] bg-white px-3 text-sm text-[#0a1f1a] dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
+                  />
+                </label>
+
+                <label className="text-xs font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">
+                  GitHub URL
+                  <input
+                    value={profileLinks.github}
+                    onChange={(event) => handleProfileLinkChange('github', event.target.value)}
+                    placeholder="https://github.com/username"
+                    className="mt-2 h-11 w-full rounded-xl border border-[#bfd2ca] bg-white px-3 text-sm text-[#0a1f1a] dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
+                  />
+                </label>
+
+                <label className="text-xs font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">
+                  Other project repo
+                  <input
+                    value={profileLinks.otherRepo}
+                    onChange={(event) => handleProfileLinkChange('otherRepo', event.target.value)}
+                    placeholder="GitLab / Bitbucket / other"
+                    className="mt-2 h-11 w-full rounded-xl border border-[#bfd2ca] bg-white px-3 text-sm text-[#0a1f1a] dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100"
+                  />
+                </label>
+              </div>
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button type="button" variant="secondary" size="sm" onClick={connectLinkedIn}>
+                  Auto-fill LinkedIn
+                </Button>
+                <Button type="button" variant="secondary" size="sm" onClick={connectHandshake}>
+                  Auto-fill Handshake
+                </Button>
+                <Button type="button" variant="secondary" size="sm" onClick={connectGithub}>
+                  Auto-fill GitHub
+                </Button>
+                <Button type="button" variant="secondary" size="sm" onClick={connectOtherRepo}>
+                  Auto-fill other repo
+                </Button>
+              </div>
+
+              <Button type="button" variant="secondary" size="sm" className="mt-3" onClick={saveExternalLinks}>
+                Save linked profiles
+              </Button>
+
+              <div className="mt-4 border-t border-[#dfe8e3] pt-4 dark:border-slate-700">
+                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">Video evidence</p>
+                <div className="mt-2 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-xl border border-[#d4e1db] bg-[#f8fcfa] p-3 dark:border-slate-700 dark:bg-slate-900">
+                    <p className="text-sm font-semibold text-[#12392f] dark:text-slate-100">Get to Know You video</p>
+                    <p className="mt-1 text-xs text-[#48635b] dark:text-slate-300">Recommended: 60-90 seconds.</p>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="mt-3"
+                      onClick={() => getToKnowVideoInputRef.current?.click()}
+                    >
+                      Upload intro video
+                    </Button>
+                    <p className="mt-2 text-xs text-[#48635b] dark:text-slate-300">
+                      {getToKnowVideoName || 'No intro video uploaded yet.'}
+                    </p>
+                  </div>
+
+                  <div className="rounded-xl border border-[#d4e1db] bg-[#f8fcfa] p-3 dark:border-slate-700 dark:bg-slate-900">
+                    <p className="text-sm font-semibold text-[#12392f] dark:text-slate-100">Project demo videos</p>
+                    <p className="mt-1 text-xs text-[#48635b] dark:text-slate-300">Upload one or more walkthrough clips.</p>
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      className="mt-3"
+                      onClick={() => projectDemoVideoInputRef.current?.click()}
+                    >
+                      Upload project demos
+                    </Button>
+                    <p className="mt-2 text-xs text-[#48635b] dark:text-slate-300">
+                      {projectDemoVideoNames.length === 0
+                        ? 'No demo videos uploaded yet.'
+                        : `${projectDemoVideoNames.length} project demo video${projectDemoVideoNames.length === 1 ? '' : 's'} uploaded.`}
+                    </p>
+                    {projectDemoVideoNames.length > 0 ? (
+                      <ul className="mt-2 list-disc space-y-1 pl-4 text-xs text-[#48635b] dark:text-slate-300">
+                        {projectDemoVideoNames.map((videoName) => (
+                          <li key={videoName}>{videoName}</li>
+                        ))}
+                      </ul>
+                    ) : null}
+                  </div>
+                </div>
+
+                <input
+                  ref={getToKnowVideoInputRef}
+                  type="file"
+                  className="sr-only"
+                  accept="video/*"
+                  onChange={handleGetToKnowVideoSelect}
+                />
+                <input
+                  ref={projectDemoVideoInputRef}
+                  type="file"
+                  className="sr-only"
+                  accept="video/*"
+                  multiple
+                  onChange={handleProjectDemoVideoSelect}
+                />
+              </div>
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                {connectedProfileEntries.length === 0 ? (
+                  <Badge className="bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200">No profile links saved</Badge>
+                ) : (
+                  connectedProfileEntries.map(([key]) => <Badge key={`connected-${key}`}>{profileLinkLabelMap[key]} linked</Badge>)
+                )}
+              </div>
+            </Card>
+
             <Card
               className="bg-white/95 p-5 dark:bg-slate-900/80"
               header={<h3 className="text-xl font-semibold text-[#0a1f1a] dark:text-slate-100">Artifact detail</h3>}

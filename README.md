@@ -56,6 +56,26 @@ npm run dev
 npm run storybook
 ```
 
+## Mock Site Prototype
+
+Use Storybook as a clickable mock website via `Mock Site/Prototype`.
+
+- `Home` recreates the landing experience.
+- `RecruiterFlow` chains recruiter setup, scoring, and candidate exploration screens.
+- `StudentFlow` chains onboarding, evidence, pathway, and guidance screens.
+- `WalkthroughFlow` runs the end-to-end walkthrough.
+- Mobile variants are included for recruiter and student flows.
+
+Inside each mock page story, use the top `Mock Site Prototype` switcher to jump between flows.
+
+For sharing a static prototype:
+
+```bash
+npm run build-storybook
+```
+
+Deploy the generated `storybook-static` directory to Vercel, Netlify, or any static host.
+
 ### Tests
 
 ```bash

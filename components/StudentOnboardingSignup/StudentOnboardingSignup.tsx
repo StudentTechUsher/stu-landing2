@@ -26,6 +26,12 @@ type AgentSuggestion = {
   impact: string;
 };
 
+type ArchetypeRecommendation = {
+  archetypeId: StudentArchetype;
+  confidence: 'High' | 'Medium';
+  reason: string;
+};
+
 const roleTemplates: RoleTemplate[] = [
   {
     id: 'product-analyst',
@@ -140,6 +146,85 @@ const getInitialTemplate = (id?: string) => {
   return roleTemplates.find((template) => template.id === id) ?? roleTemplates[0];
 };
 
+const inferArchetype = (
+  majorTrack: string,
+  learningMode: LearningMode | '',
+  weeklyCommitment: number
+): ArchetypeRecommendation => {
+  const major = majorTrack.toLowerCase();
+  const containsAny = (keywords: string[]) => keywords.some((keyword) => major.includes(keyword));
+
+  if (containsAny(['computer', 'software', 'engineering', 'cs', 'developer'])) {
+    return {
+      archetypeId: 'builder',
+      confidence: 'High',
+      reason: 'Your major focus points toward implementation-heavy work and shipping projects.'
+    };
+  }
+
+  if (containsAny(['data', 'analytics', 'statistics', 'math', 'econometrics'])) {
+    return {
+      archetypeId: 'analyst',
+      confidence: 'High',
+      reason: 'Your academic focus aligns with pattern finding, measurement, and structured analysis.'
+    };
+  }
+
+  if (containsAny(['business', 'economics', 'finance', 'marketing', 'strategy', 'consult'])) {
+    return {
+      archetypeId: 'strategist',
+      confidence: 'High',
+      reason: 'Your major context suggests you learn best through frameworks, tradeoffs, and business context.'
+    };
+  }
+
+  if (learningMode === 'project') {
+    return {
+      archetypeId: 'builder',
+      confidence: 'Medium',
+      reason: 'Project-based learning usually maps to rapid execution and iteration.'
+    };
+  }
+
+  if (learningMode === 'coursework') {
+    return {
+      archetypeId: 'analyst',
+      confidence: 'Medium',
+      reason: 'Coursework-first preference typically favors structured review and methodical analysis.'
+    };
+  }
+
+  if (learningMode === 'collaborative') {
+    return {
+      archetypeId: 'operator',
+      confidence: 'Medium',
+      reason: 'Team-oriented learning often aligns with coordination, reliability, and follow-through.'
+    };
+  }
+
+  if (learningMode === 'independent' && weeklyCommitment >= 10) {
+    return {
+      archetypeId: 'operator',
+      confidence: 'Medium',
+      reason: 'Independent deep-work with high weekly commitment aligns with consistent execution systems.'
+    };
+  }
+
+  if (weeklyCommitment >= 12) {
+    return {
+      archetypeId: 'builder',
+      confidence: 'Medium',
+      reason: 'Higher weekly commitment usually supports project-first momentum and shipping output.'
+    };
+  }
+
+  return {
+    archetypeId: 'strategist',
+    confidence: 'Medium',
+    reason: 'Based on current inputs, strategist is the safest starting archetype and can be adjusted later.'
+  };
+};
+
 export interface StudentOnboardingSignupProps {
   defaultTemplateId?: string;
   defaultCampusEmail?: string;
@@ -170,11 +255,18 @@ export const StudentOnboardingSignup = ({
   const [targetCompany, setTargetCompany] = useState(initialTemplate.company);
   const [skillDomain, setSkillDomain] = useState(initialTemplate.skillDomain);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [archetypeAgentResult, setArchetypeAgentResult] = useState<ArchetypeRecommendation | null>(null);
+  const [showArchetypeAgent, setShowArchetypeAgent] = useState(false);
 
   const selectedTemplate = useMemo(
     () => roleTemplates.find((template) => template.id === selectedTemplateId) ?? null,
     [selectedTemplateId]
   );
+
+  const recommendedArchetype = useMemo(() => {
+    if (!archetypeAgentResult) return null;
+    return studentArchetypes.find((archetype) => archetype.id === archetypeAgentResult.archetypeId) ?? null;
+  }, [archetypeAgentResult]);
 
   const campusEmailValid = emailRegex.test(campusEmail.trim());
 
@@ -269,7 +361,7 @@ export const StudentOnboardingSignup = ({
       suggestions.push({
         id: 'archetype',
         title: 'Identify how you learn best',
-        action: 'Pick a student archetype',
+        action: 'Pick an archetype or ask the archetype assistant',
         rationale: 'Archetype changes recommendation tone and milestone style.',
         impact: 'AI guidance panel quality'
       });
@@ -391,6 +483,26 @@ export const StudentOnboardingSignup = ({
     setStatusMessage(`Applied template: ${template.label}.`);
   };
 
+  const runArchetypeAssistant = () => {
+    const recommendation = inferArchetype(majorTrack, learningMode, weeklyCommitment);
+    const suggestedArchetype = studentArchetypes.find((archetype) => archetype.id === recommendation.archetypeId);
+
+    setArchetypeAgentResult(recommendation);
+    setShowArchetypeAgent(true);
+    setStatusMessage(`Agent recommendation ready: ${suggestedArchetype?.label ?? 'Archetype'} archetype.`);
+  };
+
+  const applyArchetypeRecommendation = () => {
+    if (!archetypeAgentResult) {
+      setStatusMessage('Run the archetype assistant first to generate a recommendation.');
+      return;
+    }
+
+    const suggestedArchetype = studentArchetypes.find((archetype) => archetype.id === archetypeAgentResult.archetypeId);
+    setStudentArchetype(archetypeAgentResult.archetypeId);
+    setStatusMessage(`Applied archetype recommendation: ${suggestedArchetype?.label ?? 'Archetype'}.`);
+  };
+
   const captureIntent = () => {
     if (!baselineReady) {
       setStatusMessage('Finish learner baseline first so agent recommendations have context.');
@@ -507,7 +619,12 @@ export const StudentOnboardingSignup = ({
               </div>
 
               <div className="mt-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">Student archetype</p>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-xs font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">Student archetype</p>
+                  <Button type="button" variant="secondary" size="sm" onClick={runArchetypeAssistant}>
+                    Need help choosing? Ask agent
+                  </Button>
+                </div>
                 <div className="mt-2 grid gap-2 sm:grid-cols-2">
                   {studentArchetypes.map((archetype) => {
                     const isActive = studentArchetype === archetype.id;
@@ -528,6 +645,40 @@ export const StudentOnboardingSignup = ({
                     );
                   })}
                 </div>
+
+                {showArchetypeAgent ? (
+                  <div className="mt-3 rounded-xl border border-[#d4e1db] bg-[#f8fcfa] p-3 dark:border-slate-700 dark:bg-slate-900">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-sm font-semibold text-[#133a30] dark:text-slate-100">Archetype assistant recommendation</p>
+                      <Badge className="bg-[#eef6f1] text-[#325148] dark:bg-slate-700 dark:text-slate-200">
+                        {archetypeAgentResult ? `${archetypeAgentResult.confidence} confidence` : 'No recommendation'}
+                      </Badge>
+                    </div>
+
+                    {recommendedArchetype && archetypeAgentResult ? (
+                      <>
+                        <p className="mt-2 text-sm font-semibold text-[#11352b] dark:text-slate-100">{recommendedArchetype.label}</p>
+                        <p className="mt-1 text-xs leading-5 text-[#48635b] dark:text-slate-300">{recommendedArchetype.detail}</p>
+                        <p className="mt-1 text-xs leading-5 text-[#48635b] dark:text-slate-300">
+                          Why this fit: {archetypeAgentResult.reason}
+                        </p>
+                      </>
+                    ) : (
+                      <p className="mt-2 text-xs text-[#48635b] dark:text-slate-300">
+                        Run the assistant after adding your major, learning mode, or weekly commitment for better precision.
+                      </p>
+                    )}
+
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Button type="button" size="sm" onClick={applyArchetypeRecommendation} disabled={!archetypeAgentResult}>
+                        Use this archetype
+                      </Button>
+                      <Button type="button" variant="ghost" size="sm" onClick={runArchetypeAssistant}>
+                        Refresh recommendation
+                      </Button>
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
               <div className="mt-3">

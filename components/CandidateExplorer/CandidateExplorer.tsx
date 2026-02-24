@@ -14,6 +14,27 @@ type CandidateSortKey =
 
 type CapabilityScores = Record<CapabilityKey, number>;
 
+type VideoSignal = {
+  label: string;
+  duration: string;
+  url: string;
+};
+
+type ReferenceContact = {
+  fullName: string;
+  role: string;
+  organization: string;
+  email: string;
+  phone: string;
+  quote: string;
+};
+
+type QualitativeSignals = {
+  introVideo: VideoSignal;
+  projectDemoVideo: VideoSignal;
+  references: ReferenceContact[];
+};
+
 type Candidate = {
   id: string;
   fullName: string;
@@ -22,6 +43,7 @@ type Candidate = {
   targetRole: string;
   alignmentScore: number;
   capabilities: CapabilityScores;
+  qualitativeSignals: QualitativeSignals;
 };
 
 const ALL_UNIVERSITIES = 'All universities';
@@ -43,6 +65,24 @@ const sortOptions: Array<{ value: CandidateSortKey; label: string }> = [
   { value: 'communication_desc', label: 'Strongest data communication' }
 ];
 
+const getQualitativeSignals = (
+  introUrl: string,
+  projectDemoUrl: string,
+  references: ReferenceContact[]
+): QualitativeSignals => ({
+  introVideo: {
+    label: 'Get to know you',
+    duration: '1:30',
+    url: introUrl
+  },
+  projectDemoVideo: {
+    label: 'Project demo',
+    duration: '3:45',
+    url: projectDemoUrl
+  },
+  references
+});
+
 const candidatePool: Candidate[] = [
   {
     id: 'cand-1',
@@ -57,7 +97,33 @@ const candidatePool: Candidate[] = [
       executionReliability: 88,
       collaboration: 86,
       businessJudgment: 87
-    }
+    },
+    qualitativeSignals: getQualitativeSignals('https://videos.stu.dev/avery-park-intro', 'https://videos.stu.dev/avery-park-project-demo', [
+      {
+        fullName: 'Nicole Jensen',
+        role: 'Capstone Faculty Advisor',
+        organization: 'Brigham Young University',
+        email: 'nicole.jensen@byu.edu',
+        phone: '(801) 555-0102',
+        quote: 'Avery translates ambiguous project requirements into clean experiments and clearly communicates tradeoffs.'
+      },
+      {
+        fullName: 'Ethan Roberts',
+        role: 'Product Manager Intern Supervisor',
+        organization: 'Acme Growth Labs',
+        email: 'ethan.roberts@acmegrowth.com',
+        phone: '(312) 555-0144',
+        quote: 'Avery ran weekly updates with design and analytics and consistently surfaced the right decision risks early.'
+      },
+      {
+        fullName: 'Maya Collins',
+        role: 'Student Org President Mentor',
+        organization: 'AIS Chapter at BYU',
+        email: 'maya.collins@alumni.byu.edu',
+        phone: '(385) 555-0188',
+        quote: 'When deadlines stacked up, Avery still kept the team organized and delivered polished client-ready work.'
+      }
+    ])
   },
   {
     id: 'cand-2',
@@ -72,7 +138,25 @@ const candidatePool: Candidate[] = [
       executionReliability: 85,
       collaboration: 78,
       businessJudgment: 80
-    }
+    },
+    qualitativeSignals: getQualitativeSignals('https://videos.stu.dev/jordan-kim-intro', 'https://videos.stu.dev/jordan-kim-project-demo', [
+      {
+        fullName: 'Priya Narang',
+        role: 'Analytics Professor',
+        organization: 'Georgia Tech',
+        email: 'priya.narang@gatech.edu',
+        phone: '(404) 555-0120',
+        quote: 'Jordan presents technical findings in a way non-technical stakeholders immediately understand.'
+      },
+      {
+        fullName: 'Liam Baker',
+        role: 'Data Science Internship Lead',
+        organization: 'Vertex Retail',
+        email: 'liam.baker@vertexretail.com',
+        phone: '(770) 555-0197',
+        quote: 'Jordan independently built and validated a forecasting pipeline that our team moved into production.'
+      }
+    ])
   },
   {
     id: 'cand-3',
@@ -87,7 +171,29 @@ const candidatePool: Candidate[] = [
       executionReliability: 74,
       collaboration: 77,
       businessJudgment: 71
-    }
+    },
+    qualitativeSignals: getQualitativeSignals(
+      'https://videos.stu.dev/taylor-singh-intro',
+      'https://videos.stu.dev/taylor-singh-project-demo',
+      [
+        {
+          fullName: 'Rachel Monroe',
+          role: 'Consulting Practicum Coach',
+          organization: 'Arizona State University',
+          email: 'rachel.monroe@asu.edu',
+          phone: '(480) 555-0129',
+          quote: 'Taylor is steady under pressure and consistently improves recommendations after feedback.'
+        },
+        {
+          fullName: 'Carlos Medina',
+          role: 'Operations Manager',
+          organization: 'Southwest Logistics',
+          email: 'carlos.medina@swlogistics.com',
+          phone: '(602) 555-0163',
+          quote: 'Taylor quickly learned our constraints and produced a practical workflow redesign we still use.'
+        }
+      ]
+    )
   },
   {
     id: 'cand-4',
@@ -102,7 +208,29 @@ const candidatePool: Candidate[] = [
       executionReliability: 73,
       collaboration: 69,
       businessJudgment: 68
-    }
+    },
+    qualitativeSignals: getQualitativeSignals(
+      'https://videos.stu.dev/riley-carter-intro',
+      'https://videos.stu.dev/riley-carter-project-demo',
+      [
+        {
+          fullName: 'Devon Price',
+          role: 'Course Instructor',
+          organization: 'University of Michigan',
+          email: 'devon.price@umich.edu',
+          phone: '(734) 555-0106',
+          quote: 'Riley asks the right clarifying questions and reliably follows through on team deliverables.'
+        },
+        {
+          fullName: 'Samira Khan',
+          role: 'BI Manager',
+          organization: 'BlueLake Energy',
+          email: 'samira.khan@bluelakeenergy.com',
+          phone: '(313) 555-0172',
+          quote: 'Riley took ownership of dashboard QA and documented issues in a way that sped up release decisions.'
+        }
+      ]
+    )
   },
   {
     id: 'cand-5',
@@ -117,7 +245,37 @@ const candidatePool: Candidate[] = [
       executionReliability: 82,
       collaboration: 81,
       businessJudgment: 78
-    }
+    },
+    qualitativeSignals: getQualitativeSignals(
+      'https://videos.stu.dev/morgan-nguyen-intro',
+      'https://videos.stu.dev/morgan-nguyen-project-demo',
+      [
+        {
+          fullName: 'Alyssa Turner',
+          role: 'Product Strategy Lecturer',
+          organization: 'Purdue University',
+          email: 'alyssa.turner@purdue.edu',
+          phone: '(765) 555-0134',
+          quote: 'Morgan can connect user evidence to concrete roadmap decisions without overcomplicating the discussion.'
+        },
+        {
+          fullName: 'Noah Patel',
+          role: 'Associate Product Director',
+          organization: 'BrightPath Tech',
+          email: 'noah.patel@brightpath.com',
+          phone: '(317) 555-0175',
+          quote: 'Morgan led customer interview synthesis and surfaced a decision-ready recommendation for our PM team.'
+        },
+        {
+          fullName: 'Elena Ruiz',
+          role: 'Peer Team Lead',
+          organization: 'Purdue Product Lab',
+          email: 'elena.ruiz@purdue.edu',
+          phone: '(574) 555-0108',
+          quote: 'Morgan is a dependable collaborator who helps teams stay focused on outcomes and deadlines.'
+        }
+      ]
+    )
   },
   {
     id: 'cand-6',
@@ -132,7 +290,29 @@ const candidatePool: Candidate[] = [
       executionReliability: 67,
       collaboration: 70,
       businessJudgment: 63
-    }
+    },
+    qualitativeSignals: getQualitativeSignals(
+      'https://videos.stu.dev/casey-brooks-intro',
+      'https://videos.stu.dev/casey-brooks-project-demo',
+      [
+        {
+          fullName: 'Jacob Reed',
+          role: 'Consulting Program Mentor',
+          organization: 'University of Texas at Austin',
+          email: 'jacob.reed@utexas.edu',
+          phone: '(512) 555-0141',
+          quote: 'Casey learns quickly and does a solid job structuring ambiguous client requests into clear tasks.'
+        },
+        {
+          fullName: 'Imani Walker',
+          role: 'Operations Analyst Manager',
+          organization: 'Lone Star Health',
+          email: 'imani.walker@lonestarhealth.com',
+          phone: '(214) 555-0191',
+          quote: 'Casey is detail-oriented and consistently ships dependable analysis under tight timelines.'
+        }
+      ]
+    )
   },
   {
     id: 'cand-7',
@@ -147,7 +327,29 @@ const candidatePool: Candidate[] = [
       executionReliability: 87,
       collaboration: 83,
       businessJudgment: 84
-    }
+    },
+    qualitativeSignals: getQualitativeSignals(
+      'https://videos.stu.dev/skyler-adams-intro',
+      'https://videos.stu.dev/skyler-adams-project-demo',
+      [
+        {
+          fullName: 'Naomi Lee',
+          role: 'Data Systems Professor',
+          organization: 'Northeastern University',
+          email: 'naomi.lee@northeastern.edu',
+          phone: '(617) 555-0128',
+          quote: 'Skyler combines strong statistical judgment with excellent communication in stakeholder-facing settings.'
+        },
+        {
+          fullName: 'Connor Walsh',
+          role: 'Senior Analytics Manager',
+          organization: 'Harbor Insights',
+          email: 'connor.walsh@harborinsights.com',
+          phone: '(857) 555-0177',
+          quote: 'Skyler owned an attribution model rollout and handled feedback from product and marketing effectively.'
+        }
+      ]
+    )
   },
   {
     id: 'cand-8',
@@ -162,7 +364,29 @@ const candidatePool: Candidate[] = [
       executionReliability: 77,
       collaboration: 75,
       businessJudgment: 74
-    }
+    },
+    qualitativeSignals: getQualitativeSignals(
+      'https://videos.stu.dev/drew-morales-intro',
+      'https://videos.stu.dev/drew-morales-project-demo',
+      [
+        {
+          fullName: 'Sophie Carter',
+          role: 'Product Analytics Faculty',
+          organization: 'Georgia Tech',
+          email: 'sophie.carter@gatech.edu',
+          phone: '(404) 555-0156',
+          quote: 'Drew communicates clearly and stays focused on measurable outcomes when project scope changes.'
+        },
+        {
+          fullName: 'Ben Alvarez',
+          role: 'Associate Product Manager',
+          organization: 'Orbit Labs',
+          email: 'ben.alvarez@orbitlabs.com',
+          phone: '(678) 555-0186',
+          quote: 'Drew translated customer interview notes into roadmap-ready recommendations for our summer sprint.'
+        }
+      ]
+    )
   }
 ];
 
@@ -321,6 +545,7 @@ export const CandidateExplorer = ({
   const selectedRecommendationProfile = selectedCandidateBand
     ? recommendationProfileByBand[selectedCandidateBand]
     : undefined;
+  const selectedCandidateQualitativeSignals = selectedCandidate?.qualitativeSignals;
 
   const calendarLinkDraft = selectedCandidate
     ? (calendarDraftByCandidateId[selectedCandidate.id] ?? calendarLinksByCandidateId[selectedCandidate.id] ?? DEFAULT_CALENDAR_LINK)
@@ -431,6 +656,36 @@ export const CandidateExplorer = ({
     }));
   };
 
+  const openVideoSignal = (candidate: Candidate, video: VideoSignal) => {
+    if (typeof window !== 'undefined') {
+      window.open(video.url, '_blank', 'noopener,noreferrer');
+    }
+
+    appendActivity(candidate.id, `Opened ${video.label} video`);
+    setStatusMessage(`${video.label} opened for ${getDisplayName(candidate)}.`);
+  };
+
+  const contactReference = async (candidate: Candidate, reference: ReferenceContact) => {
+    const contactLine = `${reference.fullName} · ${reference.email} · ${reference.phone}`;
+    let copied = false;
+
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      try {
+        await navigator.clipboard.writeText(contactLine);
+        copied = true;
+      } catch {
+        copied = false;
+      }
+    }
+
+    appendActivity(candidate.id, `Opened reference contact: ${reference.fullName}`);
+    setStatusMessage(
+      copied
+        ? `Copied reference contact for ${reference.fullName}.`
+        : `Reference contact ready: ${reference.fullName} · ${reference.email}`
+    );
+  };
+
   return (
     <section aria-labelledby="candidate-explorer-title" className={sectionClassName}>
       <div className={surfaceClassName}>
@@ -447,7 +702,8 @@ export const CandidateExplorer = ({
             </h2>
             <p className="mt-3 text-sm leading-7 text-[#436059] dark:text-slate-300">
               Recruiters can sort candidate signals, compare capability breakdowns, and trigger early-conversation
-              workflows from one unified pipeline screen.
+              workflows from one unified pipeline screen, including intro and project videos plus quick reference
+              outreach.
             </p>
           </div>
           <Badge className="bg-[#e9fef3] text-[#0a402d] ring-1 ring-[#b8e9ce] dark:bg-emerald-500/20 dark:text-emerald-100 dark:ring-emerald-400/35">
@@ -684,29 +940,95 @@ export const CandidateExplorer = ({
                     </div>
                   </div>
 
+                  {selectedCandidateQualitativeSignals ? (
+                    <div className="mt-3 rounded-xl border border-[#d4e1db] bg-[#f8fcfa] p-3 dark:border-slate-700 dark:bg-slate-900">
+                      <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#3f5f54] dark:text-slate-400">
+                        Beyond the resume
+                      </p>
+                      <p className="mt-1 text-xs text-[#4a665e] dark:text-slate-300">
+                        Structured qualitative signal layered on top of capability scoring.
+                      </p>
+                      <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                        {[selectedCandidateQualitativeSignals.introVideo, selectedCandidateQualitativeSignals.projectDemoVideo].map((video) => (
+                          <article
+                            key={`${selectedCandidate.id}-${video.label}`}
+                            className="rounded-xl border border-[#d4e1db] bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900"
+                          >
+                            <p className="text-sm font-semibold text-[#12392f] dark:text-slate-100">{video.label}</p>
+                            <p className="mt-0.5 text-xs text-[#4a665e] dark:text-slate-300">Duration {video.duration}</p>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="secondary"
+                              className="mt-2 w-full"
+                              onClick={() => openVideoSignal(selectedCandidate, video)}
+                            >
+                              Open video
+                            </Button>
+                          </article>
+                        ))}
+                      </div>
+
+                      <div className="mt-3 space-y-2">
+                        <p className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">
+                          Reference contacts
+                        </p>
+                        {selectedCandidateQualitativeSignals.references.map((reference) => (
+                          <article
+                            key={`${selectedCandidate.id}-${reference.email}`}
+                            className="rounded-xl border border-[#d4e1db] bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900"
+                          >
+                            <p className="text-sm font-semibold text-[#12392f] dark:text-slate-100">{reference.fullName}</p>
+                            <p className="text-xs text-[#4a665e] dark:text-slate-300">
+                              {reference.role} · {reference.organization}
+                            </p>
+                            <p className="mt-2 text-xs italic leading-5 text-[#36544b] dark:text-slate-300">
+                              &quot;{reference.quote}&quot;
+                            </p>
+                            <p className="mt-2 text-xs text-[#4a665e] dark:text-slate-300">
+                              {anonymizedPreview ? 'Reveal candidate identity to access contact info.' : `${reference.email} · ${reference.phone}`}
+                            </p>
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="secondary"
+                              className="mt-2 w-full"
+                              disabled={anonymizedPreview}
+                              onClick={() => {
+                                void contactReference(selectedCandidate, reference);
+                              }}
+                            >
+                              {anonymizedPreview ? 'Identity hidden' : 'Copy reference contact'}
+                            </Button>
+                          </article>
+                        ))}
+                      </div>
+                    </div>
+                  ) : null}
+
                   <div className="mt-3">
                     <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">
                       Supporting capability detail
                     </p>
                     <div className="space-y-2">
-                    {capabilityDimensions.map((dimension) => {
-                      const score = selectedCandidate.capabilities[dimension.key];
+                      {capabilityDimensions.map((dimension) => {
+                        const score = selectedCandidate.capabilities[dimension.key];
 
-                      return (
-                        <div
-                          key={`detail-${dimension.key}`}
-                          className="rounded-xl border border-[#d4e1db] bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900"
-                        >
-                          <div className="mb-1 flex items-center justify-between text-xs font-medium text-[#436059] dark:text-slate-300">
-                            <span>{dimension.label}</span>
-                            <span className="font-semibold text-[#123b30] dark:text-slate-100">{score}</span>
+                        return (
+                          <div
+                            key={`detail-${dimension.key}`}
+                            className="rounded-xl border border-[#d4e1db] bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900"
+                          >
+                            <div className="mb-1 flex items-center justify-between text-xs font-medium text-[#436059] dark:text-slate-300">
+                              <span>{dimension.label}</span>
+                              <span className="font-semibold text-[#123b30] dark:text-slate-100">{score}</span>
+                            </div>
+                            <div className="h-2 rounded-full bg-[#dbe7e1] dark:bg-slate-700">
+                              <div className="h-full rounded-full bg-[#12f987]" style={{ width: `${score}%` }} />
+                            </div>
                           </div>
-                          <div className="h-2 rounded-full bg-[#dbe7e1] dark:bg-slate-700">
-                            <div className="h-full rounded-full bg-[#12f987]" style={{ width: `${score}%` }} />
-                          </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      })}
                     </div>
                   </div>
 

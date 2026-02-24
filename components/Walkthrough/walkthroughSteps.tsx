@@ -2,6 +2,7 @@ import { CandidateExplorer } from '../CandidateExplorer/CandidateExplorer';
 import { EmployerDashboardPipelineOverview } from '../EmployerDashboardPipelineOverview/EmployerDashboardPipelineOverview';
 import { OutcomeFeedbackLoop } from '../OutcomeFeedbackLoop/OutcomeFeedbackLoop';
 import { ProfileBuilder } from '../ProfileBuilder/ProfileBuilder';
+import { RecruiterImportScoringWorkbench } from '../RecruiterImportScoringWorkbench/RecruiterImportScoringWorkbench';
 import { StudentAIAgentGuidancePanel } from '../StudentAIAgentGuidancePanel/StudentAIAgentGuidancePanel';
 import { StudentArtifactRepository } from '../StudentArtifactRepository/StudentArtifactRepository';
 import { StudentDashboardCapabilityOverview } from '../StudentDashboardCapabilityOverview/StudentDashboardCapabilityOverview';
@@ -183,6 +184,31 @@ export const walkthroughSteps: WalkthroughStepDefinition[] = [
       persona: 'recruiter',
       journeyStage: 'pipeline',
       objective: 'Assess student readiness distribution and signal quality'
+    }
+  },
+  {
+    id: 'recruiter-external-import-scoring',
+    chapter: 'Recruiter signal review',
+    title: 'Import and score off-platform candidates',
+    bubbles: [
+      {
+        id: 'r2b-import',
+        title: 'Score candidates beyond the Stu network',
+        text: 'Recruiters can import student records from CSV, ATS exports, or sourced channels and score them using the same capability model.',
+        placement: 'top-left'
+      },
+      {
+        id: 'r2b-ops',
+        title: 'Operational fit for existing workflows',
+        text: 'This turns Stu into a scoring layer across early-talent pipelines, not only a marketplace of opted-in profiles.',
+        placement: 'center-right'
+      }
+    ],
+    render: () => <RecruiterImportScoringWorkbench />,
+    eventContext: {
+      persona: 'recruiter',
+      journeyStage: 'pipeline',
+      objective: 'Import external candidate records and generate comparable alignment scores'
     }
   },
   {
