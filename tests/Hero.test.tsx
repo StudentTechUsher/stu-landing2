@@ -44,11 +44,12 @@ describe('Hero', () => {
     expect(goalInput.value).toBe("Hi stu. Team, let's discuss a pilot program at my organization.");
   });
 
-  it('shows minimal alignment scale labels in the hero candidate card', () => {
+  it('shows compact capability snapshot in the hero candidate card', () => {
     render(<Hero />);
 
-    expect(screen.getByText('Emerging')).toBeInTheDocument();
-    expect(screen.getByText('Developing')).toBeInTheDocument();
+    expect(screen.getByText('Capability snapshot')).toBeInTheDocument();
+    expect(screen.getByText('Problem solving')).toBeInTheDocument();
+    expect(screen.getByText('Business judgment')).toBeInTheDocument();
   });
 
   it('shows top qualifying reason action for the featured candidate', () => {

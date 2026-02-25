@@ -5,7 +5,8 @@ import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 
 const GaugeComponent = dynamic(() => import('react-gauge-component'), {
-  ssr: false
+  ssr: false,
+  loading: () => <div className="h-[96px] w-full" aria-hidden="true" />
 });
 
 export type CandidateAlignmentBand = 'Standout' | 'Ready' | 'Developing' | 'Emerging';
@@ -23,6 +24,22 @@ const alignmentScaleItems: Array<{ band: CandidateAlignmentBand; dotClassName: s
   { band: 'Ready', dotClassName: 'bg-teal-500' },
   { band: 'Standout', dotClassName: 'bg-emerald-400' }
 ];
+
+const readinessLadderItems: Array<{ band: CandidateAlignmentBand; description: string }> = [
+  { band: 'Emerging', description: 'Baseline evidence submitted.' },
+  { band: 'Developing', description: 'Capability signal is improving with validated artifacts.' },
+  { band: 'Ready', description: 'Interview readiness is supported by consistent evidence.' },
+  { band: 'Standout', description: 'High-confidence fit with strong early-ramp potential.' }
+];
+
+const capabilityBarTones = [
+  { trackClassName: 'bg-rose-100 dark:bg-rose-500/20', fillClassName: 'bg-rose-500', scoreClassName: 'text-rose-700 dark:text-rose-300' },
+  { trackClassName: 'bg-amber-100 dark:bg-amber-500/20', fillClassName: 'bg-amber-500', scoreClassName: 'text-amber-700 dark:text-amber-300' },
+  { trackClassName: 'bg-sky-100 dark:bg-sky-500/20', fillClassName: 'bg-sky-500', scoreClassName: 'text-sky-700 dark:text-sky-300' },
+  { trackClassName: 'bg-slate-200 dark:bg-slate-500/20', fillClassName: 'bg-slate-500', scoreClassName: 'text-slate-700 dark:text-slate-300' },
+  { trackClassName: 'bg-fuchsia-100 dark:bg-fuchsia-500/20', fillClassName: 'bg-fuchsia-500', scoreClassName: 'text-fuchsia-700 dark:text-fuchsia-300' },
+  { trackClassName: 'bg-emerald-100 dark:bg-emerald-500/20', fillClassName: 'bg-emerald-500', scoreClassName: 'text-emerald-700 dark:text-emerald-300' }
+] as const;
 
 type CapabilityScore = { label: string; score: number };
 type VideoSignal = { label: string; duration: string; url: string };
@@ -61,6 +78,7 @@ export interface CandidateDetailProps {
   anonymizedPreview?: boolean;
   showQualitativeSignals?: boolean;
   showAlignmentLegend?: boolean;
+  alignmentProfileMode?: 'gauge' | 'scale' | 'ladder' | 'capability';
   showTopQualifyingReasonAction?: boolean;
   onTopQualifyingReasonAction?: () => void;
   showInviteButton?: boolean;
@@ -91,7 +109,8 @@ export const defaultCandidateDetail: CandidateDetailRecord = {
     { label: 'Data communication', score: 89 },
     { label: 'Execution reliability', score: 88 },
     { label: 'Collaboration', score: 86 },
-    { label: 'Business judgment', score: 87 }
+    { label: 'Business judgment', score: 87 },
+    { label: 'Programming fluency', score: 84 }
   ],
   topQualifyingReason: "Avery recently achieved first place in the Marriott School's annual case competition, demonstrating strong analytical thinking and executive-level presentation skills under pressure.",
   qualitativeSignals: {
@@ -139,6 +158,7 @@ export const CandidateDetail = ({
   anonymizedPreview = false,
   showQualitativeSignals = true,
   showAlignmentLegend = false,
+  alignmentProfileMode = 'gauge',
   showTopQualifyingReasonAction = false,
   onTopQualifyingReasonAction,
   showInviteButton = true,
@@ -152,6 +172,8 @@ export const CandidateDetail = ({
   const cohortLabel = `${candidate.educationProgram} ${candidate.anticipatedGraduationYear} Cohort`;
   const displayTitle = anonymizedPreview ? displayName : `${displayName} — ${cohortLabel}`;
   const avatarSrc = candidate.avatarSrc ?? defaultCandidateAvatar.src;
+  const alignmentScore = Math.max(0, Math.min(100, candidate.alignmentScore));
+  const activeLadderIndex = readinessLadderItems.findIndex((item) => item.band === candidate.alignmentBand);
   const candidateFirstName = candidate.fullName.trim().split(/\s+/)[0] ?? 'candidate';
   const topQualifyingReasonActionLabel = anonymizedPreview
     ? 'See more about this candidate'
@@ -220,54 +242,163 @@ export const CandidateDetail = ({
         <p className="mb-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">
           Alignment profile
         </p>
-        <div className="flex justify-center">
-          <div className="w-40">
-            <GaugeComponent
-              type="semicircle"
-              value={candidate.alignmentScore}
-              minValue={0}
-              maxValue={100}
-              marginInPercent={{ top: 0.04, bottom: 0.00, left: 0.07, right: 0.07 }}
-              arc={{
-                width: 0.22,
-                padding: 0.005,
-                cornerRadius: 4,
-                subArcs: [
-                  { length: 0.12, color: '#f43f5e' },
-                  { length: 0.18, color: '#f59e0b' },
-                  { length: 0.25, color: '#14b8a6' },
-                  { length: 0.45, color: '#12f987' }
-                ]
-              }}
-              pointer={{
-                type: 'needle',
-                length: 0.75,
-                width: 12,
-                animate: false,
-                strokeWidth: 0,
-                baseColor: '#dbeee5'
-              }}
-              labels={{
-                valueLabel: {
-                  matchColorWithArc: false,
-                  style: {
-                    fontSize: '30px',
-                    fontWeight: '700',
-                    fill: '#000000',
-                    textShadow: 'none'
-                  }
-                },
-                tickLabels: {
-                  hideMinMax: true,
-                  ticks: [],
-                  defaultTickLineConfig: { hide: true },
-                  defaultTickValueConfig: { hide: true }
-                }
-              }}
-            />
+        {alignmentProfileMode === 'capability' ? (
+          <div className="rounded-xl border border-[#d4e1db] bg-[#f8fcfa] px-2 py-2 dark:border-slate-700 dark:bg-slate-900">
+            <div className="flex items-center justify-between gap-2 px-0.5">
+              <p className="text-xs font-semibold text-[#15382f] dark:text-slate-100">Capability snapshot</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">
+                {candidate.alignmentBand} · {candidate.alignmentScore}
+              </p>
+            </div>
+            <div className="mt-1.5 grid grid-cols-2 gap-1.5">
+              {candidate.capabilities.map((capability, index) => {
+                const tone = capabilityBarTones[index % capabilityBarTones.length];
+
+                return (
+                  <article
+                    key={`${candidate.fullName}-${capability.label}`}
+                    className="rounded-lg border border-[#d7e4de] bg-white/90 px-2 py-1.5 dark:border-slate-700 dark:bg-slate-900"
+                  >
+                    <div className="flex items-center justify-between gap-1">
+                      <p className="text-[10px] font-semibold leading-[1.2] text-[#26473d] dark:text-slate-200">{capability.label}</p>
+                      <p className={`text-[10px] font-semibold ${tone.scoreClassName}`}>{capability.score}</p>
+                    </div>
+                    <div className={`mt-1 h-1.5 overflow-hidden rounded-full ${tone.trackClassName}`}>
+                      <div className={`h-full rounded-full ${tone.fillClassName}`} style={{ width: `${capability.score}%` }} />
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
           </div>
-        </div>
-        {showAlignmentLegend ? (
+        ) : alignmentProfileMode === 'ladder' ? (
+          <div className="rounded-xl border border-[#d4e1db] bg-[#f8fcfa] px-2.5 py-2 dark:border-slate-700 dark:bg-slate-900">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs font-semibold text-[#15382f] dark:text-slate-100">Current stage: {candidate.alignmentBand}</p>
+              <p className="text-[10px] uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">Score {candidate.alignmentScore}</p>
+            </div>
+            <ol className="mt-2 space-y-2">
+              {readinessLadderItems.map((item, index) => {
+                const isCompleted = index < activeLadderIndex;
+                const isCurrent = index === activeLadderIndex;
+                const hasNextStep = index < readinessLadderItems.length - 1;
+
+                return (
+                  <li key={item.band} className="relative pl-7">
+                    {hasNextStep ? (
+                      <span
+                        className={`absolute left-[9px] top-4 h-6 w-px ${index < activeLadderIndex ? 'bg-emerald-300 dark:bg-emerald-500/60' : 'bg-[#ccdad4] dark:bg-slate-700'}`}
+                        aria-hidden="true"
+                      />
+                    ) : null}
+                    <span
+                      className={`absolute left-0 top-0 inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-semibold ${
+                        isCurrent
+                          ? 'bg-emerald-500 text-white'
+                          : isCompleted
+                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-100'
+                            : 'bg-[#e8efeb] text-[#59736a] dark:bg-slate-800 dark:text-slate-300'
+                      }`}
+                      aria-hidden="true"
+                    >
+                      {isCompleted ? '✓' : index + 1}
+                    </span>
+                    <div className="flex items-center justify-between gap-2">
+                      <p className={`text-xs font-semibold ${isCurrent ? 'text-[#10372d] dark:text-slate-100' : 'text-[#3f5f54] dark:text-slate-300'}`}>
+                        {item.band}
+                      </p>
+                      {isCurrent ? (
+                        <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-emerald-700 dark:text-emerald-300">Current</span>
+                      ) : null}
+                    </div>
+                    <p className="mt-0.5 text-[11px] leading-4 text-[#4a665e] dark:text-slate-400">{item.description}</p>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
+        ) : alignmentProfileMode === 'scale' ? (
+          <div className="rounded-xl border border-[#d4e1db] bg-[#f8fcfa] px-2.5 py-2 dark:border-slate-700 dark:bg-slate-900">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-xs font-semibold text-[#15382f] dark:text-slate-100">
+                {candidate.alignmentBand} ({candidate.alignmentScore})
+              </p>
+              <p className="text-[10px] uppercase tracking-[0.08em] text-[#4f6a62] dark:text-slate-400">Emerging to standout</p>
+            </div>
+            <div className="relative mt-2">
+              <div className="flex h-3 overflow-hidden rounded-full bg-[#e2ece7] dark:bg-slate-700">
+                <div className="h-full bg-rose-500" style={{ width: '12%' }} />
+                <div className="h-full bg-amber-500" style={{ width: '18%' }} />
+                <div className="h-full bg-teal-500" style={{ width: '25%' }} />
+                <div className="h-full bg-emerald-400" style={{ width: '45%' }} />
+              </div>
+              <span
+                className="absolute -top-1.5 h-6 w-0.5 -translate-x-1/2 rounded-full bg-[#102b23] dark:bg-slate-100"
+                style={{ left: `${alignmentScore}%` }}
+                aria-hidden="true"
+              />
+            </div>
+            {showAlignmentLegend ? (
+              <div className="mt-1.5 flex justify-between text-[10px] font-semibold text-[#58736a] dark:text-slate-400">
+                <span>Emerging</span>
+                <span>Developing</span>
+                <span>Ready</span>
+                <span>Standout</span>
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <div className="flex justify-center">
+            <div className="w-40">
+              <div className="h-[96px] w-full">
+                <GaugeComponent
+                  type="semicircle"
+                  value={candidate.alignmentScore}
+                  minValue={0}
+                  maxValue={100}
+                  marginInPercent={{ top: 0.04, bottom: 0.00, left: 0.07, right: 0.07 }}
+                  arc={{
+                    width: 0.22,
+                    padding: 0.005,
+                    cornerRadius: 4,
+                    subArcs: [
+                      { length: 0.12, color: '#f43f5e' },
+                      { length: 0.18, color: '#f59e0b' },
+                      { length: 0.25, color: '#14b8a6' },
+                      { length: 0.45, color: '#12f987' }
+                    ]
+                  }}
+                  pointer={{
+                    type: 'needle',
+                    length: 0.75,
+                    width: 12,
+                    animate: false,
+                    strokeWidth: 0,
+                    baseColor: '#dbeee5'
+                  }}
+                  labels={{
+                    valueLabel: {
+                      matchColorWithArc: false,
+                      style: {
+                        fontSize: '30px',
+                        fontWeight: '700',
+                        fill: '#000000',
+                        textShadow: 'none'
+                      }
+                    },
+                    tickLabels: {
+                      hideMinMax: true,
+                      ticks: [],
+                      defaultTickLineConfig: { hide: true },
+                      defaultTickValueConfig: { hide: true }
+                    }
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+        {showAlignmentLegend && alignmentProfileMode === 'gauge' ? (
           <div className="mt-0.5 flex flex-wrap items-center justify-center gap-1">
             {alignmentScaleItems.map((item) => {
               const isActiveBand = item.band === candidate.alignmentBand;

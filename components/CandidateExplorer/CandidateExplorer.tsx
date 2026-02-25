@@ -6,7 +6,8 @@ import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 
 const GaugeComponent = dynamic(() => import('react-gauge-component'), {
-  ssr: false
+  ssr: false,
+  loading: () => <div className="h-[74px] w-full" aria-hidden="true" />
 });
 
 type CapabilityKey = 'problemSolving' | 'dataCommunication' | 'executionReliability' | 'collaboration' | 'businessJudgment';
@@ -502,49 +503,51 @@ export interface CandidateExplorerProps {
 const AlignmentGauge = ({ score }: { score: number }) => {
   return (
     <div className="w-28 shrink-0">
-      <GaugeComponent
-        type="semicircle"
-        value={score}
-        minValue={0}
-        maxValue={100}
-        marginInPercent={{ top: 0.04, bottom: 0.00, left: 0.07, right: 0.07 }}
-        arc={{
-          width: 0.22,
-          padding: 0.005,
-          cornerRadius: 4,
-          subArcs: [
-            { limit: 55, color: '#f43f5e' },
-            { limit: 70, color: '#f59e0b' },
-            { limit: 85, color: '#14b8a6' },
-            { limit: 100, color: '#12f987' }
-          ]
-        }}
-        pointer={{
-          type: 'needle',
-          length: 0.75,
-          width: 12,
-          animate: false,
-          strokeWidth: 0,
-          baseColor: '#dbeee5'
-        }}
-        labels={{
-          valueLabel: {
-            matchColorWithArc: false,
-            style: {
-              fontSize: '30px',
-              fontWeight: '700',
-              fill: '#000000',
-              textShadow: 'none'
+      <div className="h-[74px] w-full">
+        <GaugeComponent
+          type="semicircle"
+          value={score}
+          minValue={0}
+          maxValue={100}
+          marginInPercent={{ top: 0.04, bottom: 0.00, left: 0.07, right: 0.07 }}
+          arc={{
+            width: 0.22,
+            padding: 0.005,
+            cornerRadius: 4,
+            subArcs: [
+              { limit: 55, color: '#f43f5e' },
+              { limit: 70, color: '#f59e0b' },
+              { limit: 85, color: '#14b8a6' },
+              { limit: 100, color: '#12f987' }
+            ]
+          }}
+          pointer={{
+            type: 'needle',
+            length: 0.75,
+            width: 12,
+            animate: false,
+            strokeWidth: 0,
+            baseColor: '#dbeee5'
+          }}
+          labels={{
+            valueLabel: {
+              matchColorWithArc: false,
+              style: {
+                fontSize: '30px',
+                fontWeight: '700',
+                fill: '#000000',
+                textShadow: 'none'
+              }
+            },
+            tickLabels: {
+              hideMinMax: true,
+              ticks: [],
+              defaultTickLineConfig: { hide: true },
+              defaultTickValueConfig: { hide: true }
             }
-          },
-          tickLabels: {
-            hideMinMax: true,
-            ticks: [],
-            defaultTickLineConfig: { hide: true },
-            defaultTickValueConfig: { hide: true }
-          }
-        }}
-      />
+          }}
+        />
+      </div>
     </div>
   );
 };

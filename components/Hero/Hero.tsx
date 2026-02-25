@@ -209,7 +209,8 @@ export const Hero = () => {
               inviteButtonLabel="Fast-track to Interview"
               inviteButtonClassName="pointer-events-none cursor-default"
               showQualitativeSignals={false}
-              showAlignmentLegend={true}
+              showAlignmentLegend={false}
+              alignmentProfileMode="capability"
               showTopQualifyingReasonAction={true}
               className="mx-auto w-full max-w-[480px] rounded-[26px] border-[#cfdad5] bg-white/95 p-4 shadow-[0_24px_52px_-34px_rgba(10,31,26,0.45)] lg:mx-0 lg:max-w-[440px] dark:border-slate-700 dark:bg-slate-900/80 dark:shadow-[0_26px_56px_-34px_rgba(2,6,23,0.9)]"
             />
@@ -224,14 +225,14 @@ export const Hero = () => {
           >
             <span>Scroll for details</span>
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#bfd2ca] bg-white/75 transition-colors group-hover:border-[#95b2a7] group-hover:bg-white dark:border-slate-700 dark:bg-slate-900/60 dark:group-hover:border-slate-500">
-              <svg
-                viewBox="0 0 20 20"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                className="h-4 w-4 motion-safe:animate-bounce"
-                aria-hidden="true"
-              >
+                <svg
+                  viewBox="0 0 20 20"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  className="h-4 w-4"
+                  aria-hidden="true"
+                >
                 <path d="M5.5 8.5L10 13l4.5-4.5" />
               </svg>
             </span>
