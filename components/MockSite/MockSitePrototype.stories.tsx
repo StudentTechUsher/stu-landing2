@@ -1,6 +1,6 @@
 import { linkTo } from '@storybook/addon-links';
 import type { Meta, StoryObj } from '@storybook/react';
-import type { ReactNode } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 import { CandidateExplorer } from '../CandidateExplorer/CandidateExplorer';
 import { EmployerDashboardPipelineOverview } from '../EmployerDashboardPipelineOverview/EmployerDashboardPipelineOverview';
 import { OutcomeFeedbackLoop } from '../OutcomeFeedbackLoop/OutcomeFeedbackLoop';
@@ -20,7 +20,7 @@ type NavItem = {
   label: string;
   shortLabel: string;
   description: string;
-  icon: ({ className }: { className?: string }) => JSX.Element;
+  icon: ComponentType<{ className?: string }>;
   storyId: string;
 };
 
