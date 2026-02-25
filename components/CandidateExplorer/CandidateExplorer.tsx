@@ -1,9 +1,13 @@
 import { useMemo, useState } from 'react';
-import GaugeComponent from 'react-gauge-component';
+import dynamic from 'next/dynamic';
 import defaultCandidateAvatar from '../../public/images/Gemini_Generated_Image_2jzqqj2jzqqj2jzq.png';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
+
+const GaugeComponent = dynamic(() => import('react-gauge-component'), {
+  ssr: false
+});
 
 type CapabilityKey = 'problemSolving' | 'dataCommunication' | 'executionReliability' | 'collaboration' | 'businessJudgment';
 
