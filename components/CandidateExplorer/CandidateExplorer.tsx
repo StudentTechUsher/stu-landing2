@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import GaugeComponent from 'react-gauge-component';
 import defaultCandidateAvatar from '../../public/images/Gemini_Generated_Image_2jzqqj2jzqqj2jzq.png';
 import { Badge } from '../ui/Badge';
 import { Button } from '../ui/Button';
@@ -44,6 +45,8 @@ type Candidate = {
   alignmentScore: number;
   capabilities: CapabilityScores;
   qualitativeSignals: QualitativeSignals;
+  topQualifyingReason: string;
+  inviteDraftMessage: string;
 };
 
 const ALL_UNIVERSITIES = 'All universities';
@@ -98,6 +101,8 @@ const candidatePool: Candidate[] = [
       collaboration: 86,
       businessJudgment: 87
     },
+    topQualifyingReason: "Avery recently achieved first place in the Marriott School's annual case competition, demonstrating strong analytical thinking and executive-level presentation skills under pressure.",
+    inviteDraftMessage: "Hi Avery, saw you recently won a case competition! Would love to hear more about your experience and explore what's next for you.",
     qualitativeSignals: getQualitativeSignals('https://videos.stu.dev/avery-park-intro', 'https://videos.stu.dev/avery-park-project-demo', [
       {
         fullName: 'Nicole Jensen',
@@ -139,6 +144,8 @@ const candidatePool: Candidate[] = [
       collaboration: 78,
       businessJudgment: 80
     },
+    topQualifyingReason: "Jordan independently built and validated a forecasting pipeline that their team moved directly into production — a level of ownership that's rare at this career stage.",
+    inviteDraftMessage: "Hi Jordan, heard you built a forecasting pipeline that went all the way to production. That kind of ownership stands out. Would love to connect.",
     qualitativeSignals: getQualitativeSignals('https://videos.stu.dev/jordan-kim-intro', 'https://videos.stu.dev/jordan-kim-project-demo', [
       {
         fullName: 'Priya Narang',
@@ -172,6 +179,8 @@ const candidatePool: Candidate[] = [
       collaboration: 77,
       businessJudgment: 71
     },
+    topQualifyingReason: "Taylor stays composed under pressure and consistently improves deliverables after feedback — a combination that signals fast growth in a consulting environment.",
+    inviteDraftMessage: "Hi Taylor, your track record of staying composed under pressure while continuously refining your work is exactly what we look for. Would love to chat.",
     qualitativeSignals: getQualitativeSignals(
       'https://videos.stu.dev/taylor-singh-intro',
       'https://videos.stu.dev/taylor-singh-project-demo',
@@ -209,6 +218,8 @@ const candidatePool: Candidate[] = [
       collaboration: 69,
       businessJudgment: 68
     },
+    topQualifyingReason: "Riley took full ownership of dashboard QA and documented issues in a way that directly accelerated release decisions — showing strong process instincts.",
+    inviteDraftMessage: "Hi Riley, taking ownership of dashboard QA and turning that into faster release decisions is impressive work. Would love to learn more.",
     qualitativeSignals: getQualitativeSignals(
       'https://videos.stu.dev/riley-carter-intro',
       'https://videos.stu.dev/riley-carter-project-demo',
@@ -246,6 +257,8 @@ const candidatePool: Candidate[] = [
       collaboration: 81,
       businessJudgment: 78
     },
+    topQualifyingReason: "Morgan connects user evidence to concrete roadmap decisions without overcomplicating the discussion — a rare blend of research skill and product judgment.",
+    inviteDraftMessage: "Hi Morgan, translating user research directly into roadmap decisions is a skill most candidates struggle with — you seem to have it. Would love to connect.",
     qualitativeSignals: getQualitativeSignals(
       'https://videos.stu.dev/morgan-nguyen-intro',
       'https://videos.stu.dev/morgan-nguyen-project-demo',
@@ -291,6 +304,8 @@ const candidatePool: Candidate[] = [
       collaboration: 70,
       businessJudgment: 63
     },
+    topQualifyingReason: "Casey structures ambiguous client requests into clear, actionable tasks — a practical skill that makes a tangible difference on fast-moving consulting engagements.",
+    inviteDraftMessage: "Hi Casey, structuring ambiguous client requests into clear deliverables is harder than it sounds. Your approach stood out. Would love to chat.",
     qualitativeSignals: getQualitativeSignals(
       'https://videos.stu.dev/casey-brooks-intro',
       'https://videos.stu.dev/casey-brooks-project-demo',
@@ -328,6 +343,8 @@ const candidatePool: Candidate[] = [
       collaboration: 83,
       businessJudgment: 84
     },
+    topQualifyingReason: "Skyler combines deep statistical judgment with clear stakeholder communication — an increasingly rare pairing that accelerates team decision-making.",
+    inviteDraftMessage: "Hi Skyler, the combination of statistical depth and clear stakeholder communication is rare — and we noticed. Would love to explore a potential fit.",
     qualitativeSignals: getQualitativeSignals(
       'https://videos.stu.dev/skyler-adams-intro',
       'https://videos.stu.dev/skyler-adams-project-demo',
@@ -365,6 +382,8 @@ const candidatePool: Candidate[] = [
       collaboration: 75,
       businessJudgment: 74
     },
+    topQualifyingReason: "Drew translated customer interview notes into sprint-ready roadmap recommendations for a real product team — demonstrating strong, practical product instincts.",
+    inviteDraftMessage: "Hi Drew, turning customer interviews into sprint-ready recommendations shows real product thinking. Would love to learn more about your work.",
     qualitativeSignals: getQualitativeSignals(
       'https://videos.stu.dev/drew-morales-intro',
       'https://videos.stu.dev/drew-morales-project-demo',
@@ -403,6 +422,7 @@ const bandClassMap: Record<string, string> = {
   Developing: 'bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-100',
   Emerging: 'bg-rose-100 text-rose-800 dark:bg-rose-500/20 dark:text-rose-100'
 };
+
 
 const alignmentMetadataTagsByBand: Record<string, string[]> = {
   Standout: [
@@ -475,6 +495,56 @@ export interface CandidateExplorerProps {
   embedded?: boolean;
 }
 
+const AlignmentGauge = ({ score }: { score: number }) => {
+  return (
+    <div className="w-28 shrink-0">
+      <GaugeComponent
+        type="semicircle"
+        value={score}
+        minValue={0}
+        maxValue={100}
+        marginInPercent={{ top: 0.04, bottom: 0.00, left: 0.07, right: 0.07 }}
+        arc={{
+          width: 0.22,
+          padding: 0.005,
+          cornerRadius: 4,
+          subArcs: [
+            { limit: 55, color: '#f43f5e' },
+            { limit: 70, color: '#f59e0b' },
+            { limit: 85, color: '#14b8a6' },
+            { limit: 100, color: '#12f987' }
+          ]
+        }}
+        pointer={{
+          type: 'needle',
+          length: 0.75,
+          width: 12,
+          animate: false,
+          strokeWidth: 0,
+          baseColor: '#dbeee5'
+        }}
+        labels={{
+          valueLabel: {
+            matchColorWithArc: false,
+            style: {
+              fontSize: '30px',
+              fontWeight: '700',
+              fill: '#000000',
+              textShadow: 'none'
+            }
+          },
+          tickLabels: {
+            hideMinMax: true,
+            ticks: [],
+            defaultTickLineConfig: { hide: true },
+            defaultTickValueConfig: { hide: true }
+          }
+        }}
+      />
+    </div>
+  );
+};
+
 export const CandidateExplorer = ({
   defaultAnonymized = false,
   candidateAvatarSrc = defaultCandidateAvatar.src,
@@ -490,6 +560,7 @@ export const CandidateExplorer = ({
   const [invitedCandidateIds, setInvitedCandidateIds] = useState<string[]>([]);
   const [calendarSentCandidateIds, setCalendarSentCandidateIds] = useState<string[]>([]);
 
+  const [inviteMessageDraftByCandidateId, setInviteMessageDraftByCandidateId] = useState<Record<string, string>>({});
   const [calendarLinksByCandidateId, setCalendarLinksByCandidateId] = useState<Record<string, string>>({});
   const [calendarDraftByCandidateId, setCalendarDraftByCandidateId] = useState<Record<string, string>>({});
   const [notesByCandidateId, setNotesByCandidateId] = useState<Record<string, string[]>>({});
@@ -575,12 +646,18 @@ export const CandidateExplorer = ({
     return anonymizedPreview ? candidate.anonymousLabel : candidate.fullName;
   };
 
-  const inviteCandidate = (candidate: Candidate) => {
+  const getInviteMessage = (candidate: Candidate) => {
+    return inviteMessageDraftByCandidateId[candidate.id] ?? candidate.inviteDraftMessage;
+  };
+
+  const inviteCandidate = (candidate: Candidate, customMessage?: string) => {
     if (!invitedCandidateIds.includes(candidate.id)) {
       setInvitedCandidateIds((current) => [...current, candidate.id]);
     }
 
-    appendActivity(candidate.id, 'Invited to early conversation');
+    const message = customMessage ?? getInviteMessage(candidate);
+    const preview = message.length > 60 ? `${message.slice(0, 60)}…` : message;
+    appendActivity(candidate.id, `Invite sent: "${preview}"`);
     setStatusMessage(`Invite sent to ${getDisplayName(candidate)}.`);
   };
 
@@ -796,6 +873,7 @@ export const CandidateExplorer = ({
                   const isInvited = invitedCandidateIds.includes(candidate.id);
                   const isFlagged = flaggedCandidateIds.includes(candidate.id);
                   const band = getAlignmentBand(candidate.alignmentScore);
+                  const inviteMessage = getInviteMessage(candidate);
 
                   return (
                     <article
@@ -806,52 +884,73 @@ export const CandidateExplorer = ({
                           : 'border-[#d5e1db] bg-[#f9fdfb] dark:border-slate-700 dark:bg-slate-900'
                       }`}
                     >
-                      <div className="flex flex-wrap items-start justify-between gap-3">
+                      {/* Row 1: Name + band badge */}
+                      <div className="flex flex-wrap items-start justify-between gap-2">
                         <div>
                           <p className="text-sm font-semibold text-[#0f2b23] dark:text-slate-100">{getDisplayName(candidate)}</p>
                           <p className="mt-0.5 text-xs text-[#4c6860] dark:text-slate-400">
                             {candidate.targetRole} · {anonymizedPreview ? 'University hidden in preview' : candidate.university}
                           </p>
                         </div>
-                        <div className="text-right">
-                          <Badge className={bandClassMap[band]}>{band}</Badge>
-                          <p className="mt-1 text-xs font-semibold text-[#1a3f33] dark:text-slate-200">
-                            Alignment {candidate.alignmentScore}
+                        <Badge className={bandClassMap[band]}>{band}</Badge>
+                      </div>
+
+                      {/* Row 2: Gauge + top qualifying reason */}
+                      <div className="mt-3 flex items-start gap-3">
+                        <AlignmentGauge score={candidate.alignmentScore} />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-[10px] font-semibold uppercase tracking-[0.08em] text-[#4c6860] dark:text-slate-400">
+                            Top qualifying reason
+                          </p>
+                          <p className="mt-1 text-xs leading-[1.55] text-[#1f3d34] dark:text-slate-200">
+                            {candidate.topQualifyingReason}
                           </p>
                         </div>
                       </div>
 
-                      <div className="mt-3 grid gap-1.5 sm:grid-cols-2">
-                        {capabilityDimensions.map((dimension) => {
-                          const score = candidate.capabilities[dimension.key];
-
-                          return (
-                            <div
-                              key={`${candidate.id}-${dimension.key}`}
-                              className="rounded-lg border border-[#d7e3dd] bg-white px-2 py-1.5 dark:border-slate-700 dark:bg-slate-950"
-                            >
-                              <div className="flex items-center justify-between text-[11px] text-[#3f5b53] dark:text-slate-300">
-                                <span>{dimension.label}</span>
-                                <span className="font-semibold text-[#163b30] dark:text-slate-100">{score}</span>
-                              </div>
-                              <div className="mt-1 h-1.5 rounded-full bg-[#dbe7e1] dark:bg-slate-700">
-                                <div className="h-full rounded-full bg-[#12f987]" style={{ width: `${score}%` }} />
-                              </div>
-                            </div>
-                          );
-                        })}
+                      {/* Row 3: Editable invite message */}
+                      <div className="mt-3">
+                        <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-[#4c6860] dark:text-slate-400">
+                          Recommended invite message
+                        </p>
+                        <textarea
+                          value={inviteMessage}
+                          onChange={(event) => {
+                            setInviteMessageDraftByCandidateId((current) => ({
+                              ...current,
+                              [candidate.id]: event.target.value
+                            }));
+                          }}
+                          rows={3}
+                          className="w-full resize-none rounded-xl border border-[#d7e3dd] bg-white px-2.5 py-2 text-xs leading-[1.6] text-[#1a3d33] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
+                        />
                       </div>
 
-                      <div className="mt-3 flex flex-wrap gap-2">
-                        <Button type="button" variant="secondary" size="sm" onClick={() => setSelectedCandidateId(candidate.id)}>
-                          {isSelected ? 'Viewing details' : 'View details'}
+                      {/* Row 4: Actions */}
+                      <div className="mt-2 flex flex-wrap items-center gap-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => inviteCandidate(candidate, inviteMessage)}
+                        >
+                          {isInvited ? 'Re-send invite' : 'Send invite'}
                         </Button>
-                        <Button type="button" size="sm" onClick={() => inviteCandidate(candidate)}>
-                          {isInvited ? 'Re-send invite' : 'Invite to early conversation'}
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => setSelectedCandidateId(candidate.id)}
+                        >
+                          {isSelected ? 'Viewing details' : 'View details'}
                         </Button>
                         {isFlagged ? (
                           <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-100">
                             Reach-out flagged
+                          </Badge>
+                        ) : null}
+                        {isInvited ? (
+                          <Badge className="bg-sky-100 text-sky-800 dark:bg-sky-500/20 dark:text-sky-100">
+                            Invited
                           </Badge>
                         ) : null}
                       </div>
@@ -1034,8 +1133,8 @@ export const CandidateExplorer = ({
 
                   <Button type="button" className="mt-4 w-full" onClick={() => inviteCandidate(selectedCandidate)}>
                     {invitedCandidateIds.includes(selectedCandidate.id)
-                      ? 'Invite sent - send again'
-                      : 'Invite to early conversation'}
+                      ? 'Invite sent — send again'
+                      : 'Send invite to early conversation'}
                   </Button>
                 </>
               ) : (

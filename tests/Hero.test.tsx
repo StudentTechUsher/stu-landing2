@@ -43,4 +43,26 @@ describe('Hero', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Request Employer Pilot' }));
     expect(goalInput.value).toBe("Hi stu. Team, let's discuss a pilot program at my organization.");
   });
+
+  it('shows minimal alignment scale labels in the hero candidate card', () => {
+    render(<Hero />);
+
+    expect(screen.getByText('Emerging')).toBeInTheDocument();
+    expect(screen.getByText('Developing')).toBeInTheDocument();
+  });
+
+  it('shows top qualifying reason action for the featured candidate', () => {
+    render(<Hero />);
+
+    expect(screen.getByRole('button', { name: 'See more about Avery' })).toBeInTheDocument();
+  });
+
+  it('does not navigate when top qualifying reason action is clicked on landing hero', () => {
+    const openSpy = vi.spyOn(window, 'open').mockImplementation(() => null);
+    render(<Hero />);
+
+    fireEvent.click(screen.getByRole('button', { name: 'See more about Avery' }));
+    expect(openSpy).not.toHaveBeenCalled();
+    openSpy.mockRestore();
+  });
 });
